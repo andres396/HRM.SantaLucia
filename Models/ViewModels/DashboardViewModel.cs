@@ -12,15 +12,15 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         public decimal PromedioSalario { get; set; }
         public int VacacionesPendientes { get; set; }
         public int AsistenciaHoy { get; set; }
-        public List<ProximoCumpleañosDto> ProximosCumpleaños { get; set; }
+        public List<ProximoCumpleanosDto> ProximosCumpleanos { get; set; }
         public List<NominaResumenDto> ResumenNominaMensual { get; set; }
     }
 
-    public class ProximoCumpleañosDto
+    public class ProximoCumpleanosDto
     {
         public string NombreCompleto { get; set; }
         public DateTime FechaNacimiento { get; set; }
-        public int DiasHastaCumpleaños { get; set; }
+        public int DiasHastaCumpleanos { get; set; }
     }
 
     public class NominaResumenDto

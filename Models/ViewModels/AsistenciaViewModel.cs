@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HRM.SantaLucia.Web.Models.ViewModels
 {
     public class AsistenciaViewModel
@@ -31,7 +33,7 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [Required(ErrorMessage = "El estado es requerido")]
         public string Estado { get; set; }
 
-        [Display(Name = "Justificación")]
+        [Display(Name = "Justificaciï¿½n")]
         public string? Justificacion { get; set; }
 
         // Propiedades de solo lectura

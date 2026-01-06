@@ -1,8 +1,96 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model HRM.SantaLucia.Web.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Dashboard - Sistema HRM</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Empleados Activos</h5>
+                <h2 class="card-text">@Model.TotalEmpleadosActivos</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Docentes</h5>
+                <h2 class="card-text">@Model.TotalDocentes</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Administrativos</h5>
+                <h2 class="card-text">@Model.TotalAdministrativos</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Vacaciones Pendientes</h5>
+                <h2 class="card-text">@Model.VacacionesPendientes</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Nómina del Mes</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-success">@Model.TotalNominaMes.ToString("C")</h3>
+                <p class="text-muted">Promedio: @Model.PromedioSalario.ToString("C")</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Asistencia de Hoy</h5>
+            </div>
+            <div class="card-body">
+                <h3>@Model.AsistenciaHoy</h3>
+                <p class="text-muted">Registros de asistencia</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Accesos Rápidos</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a asp-controller="Empleado" asp-action="Create" class="btn btn-primary btn-block">Nuevo Empleado</a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a asp-controller="Asistencia" asp-action="Registrar" class="btn btn-success btn-block">Registrar Asistencia</a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a asp-controller="Nomina" asp-action="Index" class="btn btn-info btn-block">Calcular Nómina</a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a asp-controller="Vacaciones" asp-action="Solicitar" class="btn btn-warning btn-block">Solicitar Vacaciones</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,3 +1,8 @@
+using AutoMapper;
+using HRM.SantaLucia.Web.Data.Repositories;
+using HRM.SantaLucia.Web.Models.Entities;
+using HRM.SantaLucia.Web.Models.ViewModels;
+
 namespace HRM.SantaLucia.Web.Services
 {
     public class VacacionesService : IVacacionesService
@@ -35,29 +40,27 @@ namespace HRM.SantaLucia.Web.Services
 
             if (model.DiasSolicitados > diasDisponibles)
             {
-                throw new InvalidOperationException("No tiene suficientes días de vacaciones disponibles");
+                throw new InvalidOperationException("No tiene suficientes dï¿½as de vacaciones disponibles");
             }
 
             var vacacion = _mapper.Map<Vacaciones>(model);
             vacacion.FechaInicioKey = int.Parse(model.FechaInicio.ToString("yyyyMMdd"));
             vacacion.FechaFinKey = int.Parse(model.FechaFin.ToString("yyyyMMdd"));
-            vacacion.DiasDisponibles = diasDisponibles;
-            vacacion.DiasTomados = 0;
-            vacacion.DiasRestantes = diasDisponibles - model.DiasSolicitados;
             vacacion.Estado = "Pendiente";
             vacacion.FechaSolicitud = DateTime.Now;
+            vacacion.FechaCreacion = DateTime.Now;
 
             return await _repository.SolicitarAsync(vacacion);
         }
 
         public async Task<bool> AprobarAsync(int vacacionKey, int aprobadorKey, string observaciones)
         {
-            return await _repository.AprobarRechazarAsync(vacacionKey, aprobadorKey, "Aprobado", observaciones);
+            return await _repository.AprobarRechazarAsync(vacacionKey, aprobadorKey, "Aprobada", observaciones);
         }
 
         public async Task<bool> RechazarAsync(int vacacionKey, int aprobadorKey, string observaciones)
         {
-            return await _repository.AprobarRechazarAsync(vacacionKey, aprobadorKey, "Rechazado", observaciones);
+            return await _repository.AprobarRechazarAsync(vacacionKey, aprobadorKey, "Rechazada", observaciones);
         }
 
         public async Task<int> GetDiasDisponiblesAsync(int empleadoKey)

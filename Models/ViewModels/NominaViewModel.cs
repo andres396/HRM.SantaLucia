@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HRM.SantaLucia.Web.Models.ViewModels
 {
     public class NominaViewModel
@@ -7,7 +9,7 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         public string NombreEmpleado { get; set; }
         public string NombrePuesto { get; set; }
         public string NombreDepartamento { get; set; }
-        public int Año { get; set; }
+        public int Ano { get; set; }
         public int Mes { get; set; }
         public string NombreMes { get; set; }
 
@@ -36,14 +38,14 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
 
     public class CalcularNominaViewModel
     {
-        [Display(Name = "Año")]
-        [Required(ErrorMessage = "El año es requerido")]
-        [Range(2020, 2030, ErrorMessage = "Año inválido")]
-        public int Año { get; set; }
+        [Display(Name = "AÃ±o")]
+        [Required(ErrorMessage = "El aÃ±o es requerido")]
+        [Range(2020, 2030, ErrorMessage = "AÃ±o invÃ¡lido")]
+        public int Ano { get; set; }
 
         [Display(Name = "Mes")]
         [Required(ErrorMessage = "El mes es requerido")]
-        [Range(1, 12, ErrorMessage = "Mes inválido")]
+        [Range(1, 12, ErrorMessage = "Mes invÃ¡lido")]
         public int Mes { get; set; }
 
         public List<NominaViewModel> Nominas { get; set; }

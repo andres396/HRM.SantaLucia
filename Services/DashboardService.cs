@@ -1,46 +1,59 @@
-using Dapper;
-using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using HRM.SantaLucia.Web.Data;
+using HRM.SantaLucia.Web.Models.ViewModels;
 
 namespace HRM.SantaLucia.Web.Services
 {
     public class DashboardService : IDashboardService
     {
-        private readonly string _connectionString;
+        private readonly ApplicationDbContext _context;
 
-        public DashboardService(IConfiguration configuration)
+        public DashboardService(ApplicationDbContext context)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _context = context;
         }
 
         public async Task<DashboardViewModel> GetDashboardDataAsync()
         {
-            using (var connection = new SqlConnection(_connectionString))
+            var totalEmpleadosActivos = await _context.Empleados.CountAsync(e => e.Activo);
+            var totalDocentes = await _context.Empleados
+                .Include(e => e.Puesto)
+                .CountAsync(e => e.Activo && e.Puesto != null && e.Puesto.TipoPuesto == "Docente");
+            var totalAdministrativos = await _context.Empleados
+                .Include(e => e.Puesto)
+                .CountAsync(e => e.Activo && e.Puesto != null && e.Puesto.TipoPuesto == "Administrativo");
+
+            var anoActual = DateTime.Now.Year;
+            var mesActual = DateTime.Now.Month;
+            var periodoKey = anoActual * 100 + mesActual;
+
+            var nominasMes = await _context.Nominas
+                .Where(n => n.PeriodoKey == periodoKey)
+                .ToListAsync();
+
+            var totalNominaMes = nominasMes.Sum(n => n.SalarioNeto);
+            var promedioSalario = nominasMes.Any() ? nominasMes.Average(n => n.SalarioNeto) : 0;
+
+            var vacacionesPendientes = await _context.Vacaciones
+                .CountAsync(v => v.Estado == "Pendiente");
+
+            var fechaHoy = DateTime.Today;
+            var fechaKey = int.Parse(fechaHoy.ToString("yyyyMMdd"));
+            var asistenciaHoy = await _context.Asistencias
+                .CountAsync(a => a.FechaKey == fechaKey);
+
+            return new DashboardViewModel
             {
-                await connection.OpenAsync();
-
-                using (var multi = await connection.QueryMultipleAsync(
-                    "dbo.USP_Dashboard_Principal",
-                    commandType: CommandType.StoredProcedure))
-                {
-                    // Leer resultados
-                    var empleadosData = await multi.ReadFirstOrDefaultAsync<dynamic>();
-                    var nominaData = await multi.ReadFirstOrDefaultAsync<dynamic>();
-                    var vacacionesData = await multi.ReadFirstOrDefaultAsync<dynamic>();
-                    var asistenciaData = await multi.ReadFirstOrDefaultAsync<dynamic>();
-
-                    return new DashboardViewModel
-                    {
-                        TotalEmpleadosActivos = empleadosData?.TotalEmpleadosActivos ?? 0,
-                        TotalDocentes = empleadosData?.TotalDocentes ?? 0,
-                        TotalAdministrativos = empleadosData?.TotalAdministrativos ?? 0,
-                        TotalNominaMes = nominaData?.TotalPagar ?? 0,
-                        PromedioSalario = nominaData?.PromedioSalario ?? 0,
-                        VacacionesPendientes = vacacionesData?.VacacionesPendientes ?? 0,
-                        AsistenciaHoy = asistenciaData?.TotalRegistros ?? 0
-                    };
-                }
-            }
+                TotalEmpleadosActivos = totalEmpleadosActivos,
+                TotalDocentes = totalDocentes,
+                TotalAdministrativos = totalAdministrativos,
+                TotalNominaMes = totalNominaMes,
+                PromedioSalario = promedioSalario,
+                VacacionesPendientes = vacacionesPendientes,
+                AsistenciaHoy = asistenciaHoy,
+                ProximosCumpleanos = new List<ProximoCumpleanosDto>(),
+                ResumenNominaMensual = new List<NominaResumenDto>()
+            };
         }
     }
 }

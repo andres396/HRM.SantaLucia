@@ -1,3 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using HRM.SantaLucia.Web.Services;
+using HRM.SantaLucia.Web.Models.ViewModels;
+using HRM.SantaLucia.Web.Data;
+
 namespace HRM.SantaLucia.Web.Controllers
 {
     public class VacacionesController : Controller
@@ -54,7 +60,7 @@ namespace HRM.SantaLucia.Web.Controllers
                         return View(model);
                     }
 
-                    // Calcular días solicitados
+                    // Calcular dï¿½as solicitados
                     model.DiasSolicitados = (model.FechaFin - model.FechaInicio).Days + 1;
 
                     var vacacionKey = await _vacacionesService.SolicitarAsync(model);

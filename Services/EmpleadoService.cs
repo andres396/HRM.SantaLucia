@@ -2,6 +2,7 @@ using AutoMapper;
 using HRM.SantaLucia.Web.Data.Repositories;
 using HRM.SantaLucia.Web.Models.Entities;
 using HRM.SantaLucia.Web.Models.ViewModels;
+using HRM.SantaLucia.Web.Data;
 
 namespace HRM.SantaLucia.Web.Services
 {
@@ -31,9 +32,21 @@ namespace HRM.SantaLucia.Web.Services
         public async Task<int> CreateAsync(EmpleadoViewModel model, string usuarioCreacion)
         {
             var empleado = _mapper.Map<Empleado>(model);
+            
+            // Asegurar que las propiedades de navegación sean null (solo usar foreign keys)
+            empleado.Puesto = null;
+            empleado.Departamento = null;
+            empleado.Banco = null;
+            
+            // Asegurar que las propiedades calculadas sean null (se calcularán en la BD)
+            empleado.NombreCompleto = null;
+            empleado.Edad = null;
+            
+            // Establecer valores de auditoría
             empleado.UsuarioCreacion = usuarioCreacion;
             empleado.FechaCreacion = DateTime.Now;
             empleado.Activo = true;
+            empleado.EmpleadoKey = 0; // Asegurar que es una nueva entidad
 
             return await _repository.CreateAsync(empleado);
         }
@@ -46,6 +59,8 @@ namespace HRM.SantaLucia.Web.Services
 
             // Mapear solo las propiedades que se pueden actualizar
             _mapper.Map(model, empleado);
+            empleado.FechaModificacion = DateTime.Now;
+            empleado.UsuarioModificacion = "SYSTEM"; // TODO: Obtener del usuario actual
 
             return await _repository.UpdateAsync(empleado);
         }

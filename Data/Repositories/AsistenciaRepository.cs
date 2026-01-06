@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using HRM.SantaLucia.Web.Data;
+using HRM.SantaLucia.Web.Models.Entities;
+
 namespace HRM.SantaLucia.Web.Data.Repositories
 {
     public class AsistenciaRepository : IAsistenciaRepository
@@ -44,6 +48,8 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                 existing.MinutosTarde = asistencia.MinutosTarde;
                 existing.Estado = asistencia.Estado;
                 existing.Justificacion = asistencia.Justificacion;
+                existing.FechaModificacion = DateTime.Now;
+                existing.UsuarioModificacion = asistencia.UsuarioCreacion ?? "SYSTEM";
             }
             else
             {
@@ -76,10 +82,24 @@ namespace HRM.SantaLucia.Web.Data.Repositories
             return await query.OrderByDescending(a => a.FechaKey).ToListAsync();
         }
 
-        public async Task<Dictionary<string, int>> GetResumenMensualAsync(int año, int mes)
+        public async Task<IEnumerable<Asistencia>> GetByPeriodoAsync(DateTime desde, DateTime hasta)
         {
-            var fechaKeyInicio = (año * 10000) + (mes * 100) + 1;
-            var fechaKeyFin = (año * 10000) + (mes * 100) + 31;
+            var fechaKeyDesde = int.Parse(desde.ToString("yyyyMMdd"));
+            var fechaKeyHasta = int.Parse(hasta.ToString("yyyyMMdd"));
+
+            return await _context.Asistencias
+                .Include(a => a.Empleado)
+                    .ThenInclude(e => e.Departamento)
+                .Where(a => a.FechaKey >= fechaKeyDesde && a.FechaKey <= fechaKeyHasta)
+                .OrderBy(a => a.FechaKey)
+                .ThenBy(a => a.Empleado.NombreCompleto)
+                .ToListAsync();
+        }
+
+        public async Task<Dictionary<string, int>> GetResumenMensualAsync(int ano, int mes)
+        {
+            var fechaKeyInicio = (ano * 10000) + (mes * 100) + 1;
+            var fechaKeyFin = (ano * 10000) + (mes * 100) + 31;
 
             var resumen = await _context.Asistencias
                 .Where(a => a.FechaKey >= fechaKeyInicio && a.FechaKey <= fechaKeyFin)

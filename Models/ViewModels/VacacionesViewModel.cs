@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HRM.SantaLucia.Web.Models.ViewModels
 {
     public class VacacionesViewModel
@@ -18,12 +20,12 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [DataType(DataType.Date)]
         public DateTime FechaFin { get; set; }
 
-        [Display(Name = "Días Solicitados")]
-        [Required(ErrorMessage = "Debe indicar los días solicitados")]
-        [Range(1, 365, ErrorMessage = "Los días deben estar entre 1 y 365")]
+        [Display(Name = "Dï¿½as Solicitados")]
+        [Required(ErrorMessage = "Debe indicar los dï¿½as solicitados")]
+        [Range(1, 365, ErrorMessage = "Los dï¿½as deben estar entre 1 y 365")]
         public int DiasSolicitados { get; set; }
 
-        [Display(Name = "Días Disponibles")]
+        [Display(Name = "Dï¿½as Disponibles")]
         public int DiasDisponibles { get; set; }
 
         [Display(Name = "Estado")]

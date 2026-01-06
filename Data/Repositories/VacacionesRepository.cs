@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using HRM.SantaLucia.Web.Data;
+using HRM.SantaLucia.Web.Models.Entities;
+
 namespace HRM.SantaLucia.Web.Data.Repositories
 {
     public class VacacionesRepository : IVacacionesRepository
@@ -45,11 +49,7 @@ namespace HRM.SantaLucia.Web.Data.Repositories
             vacacion.FechaAprobacion = DateTime.Now;
             vacacion.AprobadorKey = aprobadorKey;
             vacacion.Observaciones = observaciones;
-
-            if (estado == "Aprobado")
-            {
-                vacacion.DiasTomados = vacacion.DiasSolicitados;
-            }
+            vacacion.FechaModificacion = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return true;
@@ -67,8 +67,8 @@ namespace HRM.SantaLucia.Web.Data.Repositories
             var diasAcumulados = (int)Math.Floor(mesesTrabajados * 1.25);
 
             var diasTomados = await _context.Vacaciones
-                .Where(v => v.EmpleadoKey == empleadoKey && v.Estado == "Aprobado")
-                .SumAsync(v => v.DiasTomados);
+                .Where(v => v.EmpleadoKey == empleadoKey && v.Estado == "Aprobada")
+                .SumAsync(v => (int?)v.DiasSolicitados) ?? 0;
 
             return diasAcumulados - diasTomados;
         }

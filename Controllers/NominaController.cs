@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Mvc;
+using HRM.SantaLucia.Web.Services;
+using HRM.SantaLucia.Web.Models.ViewModels;
+
 namespace HRM.SantaLucia.Web.Controllers
 {
     public class NominaController : Controller
@@ -14,7 +18,7 @@ namespace HRM.SantaLucia.Web.Controllers
         {
             var model = new CalcularNominaViewModel
             {
-                Año = DateTime.Now.Year,
+                Ano = DateTime.Now.Year,
                 Mes = DateTime.Now.Month
             };
             return View(model);
@@ -23,19 +27,19 @@ namespace HRM.SantaLucia.Web.Controllers
         // POST: Nomina/Calcular
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Calcular(int año, int mes)
+        public async Task<IActionResult> Calcular(int ano, int mes)
         {
             try
             {
-                var success = await _nominaService.CalcularNominaAsync(año, mes, User.Identity.Name ?? "SYSTEM");
+                var success = await _nominaService.CalcularNominaAsync(ano, mes, User.Identity?.Name ?? "SYSTEM");
 
                 if (success)
                 {
-                    TempData["SuccessMessage"] = $"Nómina de {new DateTime(año, mes, 1):MMMM yyyy} calculada exitosamente";
+                    TempData["SuccessMessage"] = $"Nomina de {new DateTime(ano, mes, 1):MMMM yyyy} calculada exitosamente";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Error al calcular la nómina";
+                    TempData["ErrorMessage"] = "Error al calcular la nomina";
                 }
             }
             catch (Exception ex)
@@ -43,16 +47,16 @@ namespace HRM.SantaLucia.Web.Controllers
                 TempData["ErrorMessage"] = $"Error: {ex.Message}";
             }
 
-            return RedirectToAction(nameof(Consultar), new { año, mes });
+            return RedirectToAction(nameof(Consultar), new { ano, mes });
         }
 
         // GET: Nomina/Consultar
-        public async Task<IActionResult> Consultar(int? año, int? mes)
+        public async Task<IActionResult> Consultar(int? ano, int? mes)
         {
-            año ??= DateTime.Now.Year;
+            ano ??= DateTime.Now.Year;
             mes ??= DateTime.Now.Month;
 
-            var model = await _nominaService.GetNominaPeriodoAsync(año.Value, mes.Value);
+            var model = await _nominaService.GetNominaPeriodoAsync(ano.Value, mes.Value);
             return View(model);
         }
 

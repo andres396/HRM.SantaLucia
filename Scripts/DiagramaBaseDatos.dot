@@ -1,0 +1,58 @@
+digraph HRM_SantaLucia {
+    rankdir=TB;
+    node [shape=record, style=filled];
+    
+    // Esquema DIM - Dimensiones
+    subgraph cluster_DIM {
+        label="ESQUEMA DIM (Dimensiones)";
+        style=filled;
+        fillcolor=lightblue;
+        
+        Banco [label="{Banco|BancoKey (PK)\lNombreBanco\lCodigoBanco\lDescripcion\lActivo\l...}", fillcolor=lightcyan];
+        
+        Puesto [label="{Puesto|PuestoKey (PK)\lNombrePuesto\lDescripcion\lSalarioMinimo\lSalarioMaximo\lTipoPuesto\lActivo\l...}", fillcolor=lightcyan];
+        
+        Departamento [label="{Departamento|DepartamentoKey (PK)\lNombreDepartamento\lDescripcion\lDepartamentoPadreKey (FK)\lJefeKey (FK)\lActivo\l...}", fillcolor=lightcyan];
+        
+        Empleado [label="{Empleado|EmpleadoKey (PK)\lEmpleadoID\lCedula\lNombre\lApellido1\lApellido2\lNombreCompleto (COMPUTED)\lEmail\lTelefono\lFechaNacimiento\lEdad (COMPUTED)\lGenero\lNacionalidad\lProvincia\lCanton\lDistrito\lDireccionExacta\lFechaIngreso\lTipoContrato\lPuestoKey (FK)\lDepartamentoKey (FK)\lBancoKey (FK)\lActivo\l...}", fillcolor=lightcyan];
+    }
+    
+    // Esquema FACT - Hechos
+    subgraph cluster_FACT {
+        label="ESQUEMA FACT (Hechos)";
+        style=filled;
+        fillcolor=lightyellow;
+        
+        Nomina [label="{Nomina|NominaKey (PK)\lEmpleadoKey (FK)\lPuestoKey (FK)\lDepartamentoKey (FK)\lPeriodoKey\lSalarioBase\lHorasTrabajadas\lHorasExtra\lBonificaciones\lComisiones\lTotalExtras\lSeguroSocial\lRenta\lTotalDeducciones\lSalarioNeto\l...}", fillcolor=lightyellow];
+        
+        Asistencia [label="{Asistencia|AsistenciaKey (PK)\lEmpleadoKey (FK)\lFechaKey\lHoraEntrada\lHoraSalida\lHorasTrabajadas\lMinutosTarde\lEstado\lJustificacion\l...}", fillcolor=lightyellow];
+        
+        Vacaciones [label="{Vacaciones|VacacionKey (PK)\lEmpleadoKey (FK)\lFechaInicioKey\lFechaFinKey\lDiasSolicitados\lEstado\lAprobadorKey (FK)\lFechaSolicitud\lFechaAprobacion\l...}", fillcolor=lightyellow];
+        
+        Rendimiento [label="{Rendimiento|RendimientoKey (PK)\lEmpleadoKey (FK)\lEvaluadorKey (FK)\lFechaKey\lCalificacionGeneral\lMetasPropuestas\lMetasAlcanzadas\lComentarios\lPeriodoEvaluacion\l...}", fillcolor=lightyellow];
+    }
+    
+    // Relaciones DIM
+    Banco -> Empleado [label="BancoKey", style=dashed, color=blue];
+    Puesto -> Empleado [label="PuestoKey", style=dashed, color=blue];
+    Departamento -> Empleado [label="DepartamentoKey", style=dashed, color=blue];
+    Departamento -> Departamento [label="DepartamentoPadreKey\n(Auto-referencia)", style=dashed, color=orange];
+    Empleado -> Departamento [label="JefeKey", style=dashed, color=orange];
+    
+    // Relaciones FACT
+    Empleado -> Nomina [label="EmpleadoKey", style=solid, color=red];
+    Puesto -> Nomina [label="PuestoKey", style=solid, color=red];
+    Departamento -> Nomina [label="DepartamentoKey", style=solid, color=red];
+    
+    Empleado -> Asistencia [label="EmpleadoKey", style=solid, color=red];
+    
+    Empleado -> Vacaciones [label="EmpleadoKey\n(Solicitante)", style=solid, color=red];
+    Empleado -> Vacaciones [label="AprobadorKey\n(Aprobador)", style=solid, color=green];
+    
+    Empleado -> Rendimiento [label="EmpleadoKey\n(Evaluado)", style=solid, color=red];
+    Empleado -> Rendimiento [label="EvaluadorKey\n(Evaluador)", style=solid, color=purple];
+    
+    // Estilo de las relaciones
+    edge [fontsize=10];
+}
+

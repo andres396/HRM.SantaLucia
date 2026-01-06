@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using HRM.SantaLucia.Web.Services;
 using HRM.SantaLucia.Web.Models.ViewModels;
-using HRM.SantaLucia.Web.Data.Repositories;
+using HRM.SantaLucia.Web.Data;
 
 namespace HRM.SantaLucia.Web.Controllers
 {
@@ -72,18 +72,18 @@ namespace HRM.SantaLucia.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Validar cédula única
+                // Validar cï¿½dula ï¿½nica
                 if (!await _empleadoService.ValidarCedulaUnicaAsync(model.Cedula))
                 {
-                    ModelState.AddModelError("Cedula", "Ya existe un empleado con esta cédula");
+                    ModelState.AddModelError("Cedula", "Ya existe un empleado con esta cï¿½dula");
                     LoadViewData();
                     return View(model);
                 }
 
-                // Validar email único
+                // Validar email ï¿½nico
                 if (!await _empleadoService.ValidarEmailUnicoAsync(model.Email))
                 {
-                    ModelState.AddModelError("Email", "Ya existe un empleado con este correo electrónico");
+                    ModelState.AddModelError("Email", "Ya existe un empleado con este correo electrï¿½nico");
                     LoadViewData();
                     return View(model);
                 }
@@ -129,18 +129,18 @@ namespace HRM.SantaLucia.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                // Validar cédula única (excluyendo el empleado actual)
+                // Validar cï¿½dula ï¿½nica (excluyendo el empleado actual)
                 if (!await _empleadoService.ValidarCedulaUnicaAsync(model.Cedula, id))
                 {
-                    ModelState.AddModelError("Cedula", "Ya existe un empleado con esta cédula");
+                    ModelState.AddModelError("Cedula", "Ya existe un empleado con esta cï¿½dula");
                     LoadViewData();
                     return View(model);
                 }
 
-                // Validar email único (excluyendo el empleado actual)
+                // Validar email ï¿½nico (excluyendo el empleado actual)
                 if (!await _empleadoService.ValidarEmailUnicoAsync(model.Email, id))
                 {
-                    ModelState.AddModelError("Email", "Ya existe un empleado con este correo electrónico");
+                    ModelState.AddModelError("Email", "Ya existe un empleado con este correo electrï¿½nico");
                     LoadViewData();
                     return View(model);
                 }
@@ -213,9 +213,9 @@ namespace HRM.SantaLucia.Web.Controllers
             ViewBag.Bancos = new SelectList(_context.Bancos.Where(b => b.Activo).OrderBy(b => b.NombreBanco), "BancoKey", "NombreBanco");
 
             ViewBag.Generos = new SelectList(new[] { "Masculino", "Femenino", "Otro" });
-            ViewBag.EstadosCiviles = new SelectList(new[] { "Soltero", "Casado", "Divorciado", "Viudo", "Unión Libre" });
+            ViewBag.EstadosCiviles = new SelectList(new[] { "Soltero", "Casado", "Divorciado", "Viudo", "Uniï¿½n Libre" });
             ViewBag.TiposContrato = new SelectList(new[] { "Indefinido", "Plazo Fijo", "Por Servicios" });
-            ViewBag.Provincias = new SelectList(new[] { "San José", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limón" });
+            ViewBag.Provincias = new SelectList(new[] { "San Josï¿½", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limï¿½n" });
         }
     }
 }

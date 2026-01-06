@@ -1,0 +1,66 @@
+@model IEnumerable<HRM.SantaLucia.Web.Models.ViewModels.RendimientoViewModel>
+@{
+    ViewData["Title"] = "Evaluaciones de Rendimiento";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Evaluaciones de Rendimiento</h1>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        <a asp-action="Create" class="btn btn-success">Nueva Evaluación</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Evaluador</th>
+                    <th>Fecha Evaluación</th>
+                    <th>Período</th>
+                    <th>Calificación</th>
+                    <th>Metas</th>
+                    <th>% Cumplimiento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.NombreEmpleado</td>
+                            <td>@item.NombreEvaluador</td>
+                            <td>@item.FechaEvaluacion.ToString("dd/MM/yyyy")</td>
+                            <td>@item.PeriodoEvaluacion</td>
+                            <td>
+                                <span class="badge @(item.CalificacionGeneral >= 4 ? "bg-success" : item.CalificacionGeneral >= 3 ? "bg-warning" : "bg-danger")">
+                                    @item.CalificacionGeneral.ToString("F2")
+                                </span>
+                            </td>
+                            <td>@item.MetasAlcanzadas / @item.MetasPropuestas</td>
+                            <td>@item.PorcentajeCumplimiento.ToString("F1")%</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.RendimientoKey" class="btn btn-sm btn-info">Ver Detalles</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">No hay evaluaciones de rendimiento</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

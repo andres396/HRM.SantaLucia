@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Base de Datos - HRM Santa Lucía</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .diagram-section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .section-title.dim {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .section-title.fact {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .legend h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .legend-item {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+        .legend-item strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Diagrama de Base de Datos</h1>
+        <p class="subtitle">Sistema HRM Santa Lucía - Modelo Dimensional (Star Schema)</p>
+
+        <div class="diagram-section">
+            <div class="section-title dim">📐 Esquema DIM (Dimensiones)</div>
+            <div class="mermaid">
+erDiagram
+    DIM_Banco {
+        int BancoKey PK
+        nvarchar NombreBanco
+        nvarchar CodigoBanco
+        nvarchar Descripcion
+        bit Activo
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    DIM_Puesto {
+        int PuestoKey PK
+        nvarchar NombrePuesto
+        nvarchar Descripcion
+        decimal SalarioMinimo
+        decimal SalarioMaximo
+        nvarchar TipoPuesto
+        bit Activo
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    DIM_Departamento {
+        int DepartamentoKey PK
+        nvarchar NombreDepartamento
+        nvarchar Descripcion
+        int DepartamentoPadreKey FK
+        int JefeKey FK
+        bit Activo
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    DIM_Empleado {
+        int EmpleadoKey PK
+        nvarchar EmpleadoID
+        nvarchar Cedula
+        nvarchar Nombre
+        nvarchar Apellido1
+        nvarchar Apellido2
+        nvarchar NombreCompleto "COMPUTED"
+        nvarchar Email
+        nvarchar EmailPersonal
+        nvarchar Telefono
+        nvarchar TelefonoEmergencia
+        nvarchar ContactoEmergencia
+        date FechaNacimiento
+        int Edad "COMPUTED"
+        nvarchar Genero
+        nvarchar EstadoCivil
+        nvarchar Nacionalidad
+        nvarchar Provincia
+        nvarchar Canton
+        nvarchar Distrito
+        nvarchar DireccionExacta
+        date FechaIngreso
+        date FechaSalida
+        nvarchar TipoContrato
+        int PuestoKey FK
+        int DepartamentoKey FK
+        nvarchar CuentaBancaria
+        int BancoKey FK
+        nvarchar NivelEducativo
+        nvarchar Foto
+        bit Activo
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    DIM_Banco ||--o{ DIM_Empleado : "tiene"
+    DIM_Puesto ||--o{ DIM_Empleado : "tiene"
+    DIM_Departamento ||--o{ DIM_Empleado : "tiene"
+    DIM_Departamento ||--o{ DIM_Departamento : "padre"
+    DIM_Empleado ||--o{ DIM_Departamento : "jefe"
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <div class="section-title fact">📈 Esquema FACT (Hechos)</div>
+            <div class="mermaid">
+erDiagram
+    FACT_Nomina {
+        int NominaKey PK
+        int EmpleadoKey FK
+        int PuestoKey FK
+        int DepartamentoKey FK
+        int PeriodoKey
+        decimal SalarioBase
+        decimal HorasTrabajadas
+        decimal HorasExtra
+        decimal PagoHorasExtra
+        decimal Bonificaciones
+        decimal Comisiones
+        decimal TotalExtras
+        decimal SeguroSocial
+        decimal Renta
+        decimal OtrasDeducciones
+        decimal TotalDeducciones
+        decimal SalarioNeto
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    FACT_Asistencia {
+        int AsistenciaKey PK
+        int EmpleadoKey FK
+        int FechaKey
+        time HoraEntrada
+        time HoraSalida
+        decimal HorasTrabajadas
+        int MinutosTarde
+        nvarchar Estado
+        nvarchar Justificacion
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    FACT_Vacaciones {
+        int VacacionKey PK
+        int EmpleadoKey FK
+        int FechaInicioKey
+        int FechaFinKey
+        int DiasSolicitados
+        nvarchar Estado
+        nvarchar Observaciones
+        int AprobadorKey FK
+        datetime FechaSolicitud
+        datetime FechaAprobacion
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    FACT_Rendimiento {
+        int RendimientoKey PK
+        int EmpleadoKey FK
+        int EvaluadorKey FK
+        int FechaKey
+        decimal CalificacionGeneral
+        int MetasPropuestas
+        int MetasAlcanzadas
+        nvarchar Comentarios
+        nvarchar PeriodoEvaluacion
+        nvarchar UsuarioCreacion
+        datetime FechaCreacion
+        nvarchar UsuarioModificacion
+        datetime FechaModificacion
+    }
+
+    DIM_Empleado ||--o{ FACT_Nomina : "genera"
+    DIM_Puesto ||--o{ FACT_Nomina : "referencia"
+    DIM_Departamento ||--o{ FACT_Nomina : "referencia"
+    DIM_Empleado ||--o{ FACT_Asistencia : "registra"
+    DIM_Empleado ||--o{ FACT_Vacaciones : "solicita"
+    DIM_Empleado ||--o{ FACT_Vacaciones : "aprueba"
+    DIM_Empleado ||--o{ FACT_Rendimiento : "evalua"
+    DIM_Empleado ||--o{ FACT_Rendimiento : "es_evaluado"
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <div class="section-title">🔗 Diagrama Completo de Relaciones</div>
+            <div class="mermaid">
+erDiagram
+    DIM_Banco {
+        int BancoKey PK
+        nvarchar NombreBanco
+    }
+    DIM_Puesto {
+        int PuestoKey PK
+        nvarchar NombrePuesto
+        decimal SalarioMinimo
+    }
+    DIM_Departamento {
+        int DepartamentoKey PK
+        nvarchar NombreDepartamento
+        int DepartamentoPadreKey FK
+        int JefeKey FK
+    }
+    DIM_Empleado {
+        int EmpleadoKey PK
+        nvarchar EmpleadoID
+        nvarchar Nombre
+        nvarchar Apellido1
+        int PuestoKey FK
+        int DepartamentoKey FK
+        int BancoKey FK
+    }
+    FACT_Nomina {
+        int NominaKey PK
+        int EmpleadoKey FK
+        int PuestoKey FK
+        int DepartamentoKey FK
+        int PeriodoKey
+        decimal SalarioNeto
+    }
+    FACT_Asistencia {
+        int AsistenciaKey PK
+        int EmpleadoKey FK
+        int FechaKey
+        nvarchar Estado
+    }
+    FACT_Vacaciones {
+        int VacacionKey PK
+        int EmpleadoKey FK
+        int AprobadorKey FK
+        int DiasSolicitados
+        nvarchar Estado
+    }
+    FACT_Rendimiento {
+        int RendimientoKey PK
+        int EmpleadoKey FK
+        int EvaluadorKey FK
+        decimal CalificacionGeneral
+    }
+
+    DIM_Banco ||--o{ DIM_Empleado : "tiene"
+    DIM_Puesto ||--o{ DIM_Empleado : "tiene"
+    DIM_Departamento ||--o{ DIM_Empleado : "tiene"
+    DIM_Departamento ||--o{ DIM_Departamento : "padre"
+    DIM_Empleado ||--o{ DIM_Departamento : "jefe"
+    DIM_Empleado ||--o{ FACT_Nomina : "genera"
+    DIM_Puesto ||--o{ FACT_Nomina : "referencia"
+    DIM_Departamento ||--o{ FACT_Nomina : "referencia"
+    DIM_Empleado ||--o{ FACT_Asistencia : "registra"
+    DIM_Empleado ||--o{ FACT_Vacaciones : "solicita"
+    DIM_Empleado ||--o{ FACT_Vacaciones : "aprueba"
+    DIM_Empleado ||--o{ FACT_Rendimiento : "evalua"
+    DIM_Empleado ||--o{ FACT_Rendimiento : "es_evaluado"
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>📋 Leyenda del Diagrama</h3>
+            <div class="legend-item">
+                <strong>Esquema DIM (Dimensiones):</strong> Tablas maestras que contienen información descriptiva y de referencia.
+                <ul>
+                    <li><strong>Banco:</strong> Información de bancos</li>
+                    <li><strong>Puesto:</strong> Puestos de trabajo disponibles</li>
+                    <li><strong>Departamento:</strong> Estructura organizacional (con auto-referencia jerárquica)</li>
+                    <li><strong>Empleado:</strong> Información completa de empleados (tabla central)</li>
+                </ul>
+            </div>
+            <div class="legend-item">
+                <strong>Esquema FACT (Hechos):</strong> Tablas transaccionales que registran eventos y operaciones.
+                <ul>
+                    <li><strong>Nomina:</strong> Registros mensuales de nómina</li>
+                    <li><strong>Asistencia:</strong> Registros diarios de asistencia</li>
+                    <li><strong>Vacaciones:</strong> Solicitudes y registros de vacaciones</li>
+                    <li><strong>Rendimiento:</strong> Evaluaciones de desempeño</li>
+                </ul>
+            </div>
+            <div class="legend-item">
+                <strong>Relaciones:</strong>
+                <ul>
+                    <li><strong>||--o{</strong> : Relación uno a muchos (opcional)</li>
+                    <li><strong>PK</strong> : Primary Key (Clave Primaria)</li>
+                    <li><strong>FK</strong> : Foreign Key (Clave Foránea)</li>
+                    <li><strong>COMPUTED</strong> : Columna calculada automáticamente</li>
+                </ul>
+            </div>
+            <div class="legend-item">
+                <strong>Índices Únicos:</strong>
+                <ul>
+                    <li><strong>Asistencia:</strong> Índice único en (EmpleadoKey, FechaKey) - Un empleado solo puede tener un registro por día</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            er: {
+                fontSize: 12,
+                entityPadding: 15,
+                fill: '#fff2cc',
+                stroke: '#d6b656',
+                titleColor: '#333',
+                attributeTextColor: '#333',
+                attributeFontSize: 11
+            }
+        });
+    </script>
+</body>
+</html>
+

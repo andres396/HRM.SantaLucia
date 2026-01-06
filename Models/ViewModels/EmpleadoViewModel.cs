@@ -1,15 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HRM.SantaLucia.Web.Models.ViewModels
 {
     public class EmpleadoViewModel
     {
         public int EmpleadoKey { get; set; }
 
-        [Display(Name = "Código Empleado")]
-        [Required(ErrorMessage = "El código de empleado es requerido")]
+        [Display(Name = "Cï¿½digo Empleado")]
+        [Required(ErrorMessage = "El cï¿½digo de empleado es requerido")]
         public string EmpleadoID { get; set; }
 
-        [Display(Name = "Cédula")]
-        [Required(ErrorMessage = "La cédula es requerida")]
+        [Display(Name = "Cï¿½dula")]
+        [Required(ErrorMessage = "La cï¿½dula es requerida")]
         public string Cedula { get; set; }
 
         [Display(Name = "Nombre")]
@@ -23,22 +25,22 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [Display(Name = "Segundo Apellido")]
         public string? Apellido2 { get; set; }
 
-        [Display(Name = "Correo Electrónico")]
+        [Display(Name = "Correo Electrï¿½nico")]
         [Required(ErrorMessage = "El correo es requerido")]
-        [EmailAddress(ErrorMessage = "Correo electrónico inválido")]
+        [EmailAddress(ErrorMessage = "Correo electrï¿½nico invï¿½lido")]
         public string Email { get; set; }
 
         [Display(Name = "Correo Personal")]
-        [EmailAddress(ErrorMessage = "Correo electrónico inválido")]
+        [EmailAddress(ErrorMessage = "Correo electrï¿½nico invï¿½lido")]
         public string? EmailPersonal { get; set; }
 
-        [Display(Name = "Teléfono")]
-        [Required(ErrorMessage = "El teléfono es requerido")]
-        [Phone(ErrorMessage = "Teléfono inválido")]
+        [Display(Name = "Telï¿½fono")]
+        [Required(ErrorMessage = "El telï¿½fono es requerido")]
+        [Phone(ErrorMessage = "Telï¿½fono invï¿½lido")]
         public string Telefono { get; set; }
 
-        [Display(Name = "Teléfono Emergencia")]
-        [Phone(ErrorMessage = "Teléfono inválido")]
+        [Display(Name = "Telï¿½fono Emergencia")]
+        [Phone(ErrorMessage = "Telï¿½fono invï¿½lido")]
         public string? TelefonoEmergencia { get; set; }
 
         [Display(Name = "Contacto Emergencia")]
@@ -49,8 +51,8 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [DataType(DataType.Date)]
         public DateTime FechaNacimiento { get; set; }
 
-        [Display(Name = "Género")]
-        [Required(ErrorMessage = "El género es requerido")]
+        [Display(Name = "Gï¿½nero")]
+        [Required(ErrorMessage = "El gï¿½nero es requerido")]
         public string Genero { get; set; }
 
         [Display(Name = "Estado Civil")]
@@ -64,16 +66,16 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [Required(ErrorMessage = "La provincia es requerida")]
         public string Provincia { get; set; }
 
-        [Display(Name = "Cantón")]
-        [Required(ErrorMessage = "El cantón es requerido")]
+        [Display(Name = "Cantï¿½n")]
+        [Required(ErrorMessage = "El cantï¿½n es requerido")]
         public string Canton { get; set; }
 
         [Display(Name = "Distrito")]
         [Required(ErrorMessage = "El distrito es requerido")]
         public string Distrito { get; set; }
 
-        [Display(Name = "Dirección Exacta")]
-        [Required(ErrorMessage = "La dirección es requerida")]
+        [Display(Name = "Direcciï¿½n Exacta")]
+        [Required(ErrorMessage = "La direcciï¿½n es requerida")]
         public string DireccionExacta { get; set; }
 
         [Display(Name = "Fecha de Ingreso")]

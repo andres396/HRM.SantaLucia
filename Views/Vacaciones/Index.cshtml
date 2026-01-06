@@ -1,0 +1,88 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.VacacionesPendientesViewModel
+@{
+    ViewData["Title"] = "Vacaciones Pendientes";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Vacaciones Pendientes</h1>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        <a asp-action="Solicitar" class="btn btn-success">Nueva Solicitud</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Solicitudes Pendientes (@Model.TotalPendientes)</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Días Solicitados</th>
+                    <th>Estado</th>
+                    <th>Fecha Solicitud</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Solicitudes != null && Model.Solicitudes.Any())
+                {
+                    @foreach (var item in Model.Solicitudes)
+                    {
+                        <tr>
+                            <td>@item.NombreEmpleado</td>
+                            <td>@item.FechaInicio.ToString("dd/MM/yyyy")</td>
+                            <td>@item.FechaFin.ToString("dd/MM/yyyy")</td>
+                            <td>@item.DiasSolicitados</td>
+                            <td>
+                                @if (item.Estado == "Aprobada")
+                                {
+                                    <span class="badge bg-success">@item.Estado</span>
+                                }
+                                else if (item.Estado == "Rechazada")
+                                {
+                                    <span class="badge bg-danger">@item.Estado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">@item.Estado</span>
+                                }
+                            </td>
+                            <td>@item.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (item.Estado == "Pendiente")
+                                {
+                                    <form asp-action="Aprobar" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.VacacionKey" />
+                                        <input type="hidden" name="observaciones" value="" />
+                                        <button type="submit" class="btn btn-sm btn-success">Aprobar</button>
+                                    </form>
+                                    <form asp-action="Rechazar" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.VacacionKey" />
+                                        <input type="hidden" name="observaciones" value="" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Rechazar</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">No hay solicitudes pendientes</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

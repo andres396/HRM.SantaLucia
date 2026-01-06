@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HRM.SantaLucia.Web.Models.ViewModels
 {
     public class RendimientoViewModel
@@ -12,55 +14,55 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [Required(ErrorMessage = "Debe seleccionar un evaluador")]
         public int EvaluadorKey { get; set; }
 
-        [Display(Name = "Fecha de Evaluación")]
+        [Display(Name = "Fecha de Evaluaciï¿½n")]
         [Required(ErrorMessage = "La fecha es requerida")]
         [DataType(DataType.Date)]
         public DateTime FechaEvaluacion { get; set; }
 
-        [Display(Name = "Período")]
-        [Required(ErrorMessage = "El período es requerido")]
+        [Display(Name = "Perï¿½odo")]
+        [Required(ErrorMessage = "El perï¿½odo es requerido")]
         public string PeriodoEvaluacion { get; set; }
 
-        [Display(Name = "Conocimiento Técnico")]
+        [Display(Name = "Conocimiento Tï¿½cnico")]
         [Required]
-        [Range(0, 5, ErrorMessage = "La calificación debe estar entre 0 y 5")]
+        [Range(0, 5, ErrorMessage = "La calificaciï¿½n debe estar entre 0 y 5")]
         public decimal CalificacionConocimiento { get; set; }
 
         [Display(Name = "Calidad del Trabajo")]
         [Required]
-        [Range(0, 5, ErrorMessage = "La calificación debe estar entre 0 y 5")]
+        [Range(0, 5, ErrorMessage = "La calificaciï¿½n debe estar entre 0 y 5")]
         public decimal CalificacionCalidad { get; set; }
 
         [Display(Name = "Puntualidad y Asistencia")]
         [Required]
-        [Range(0, 5, ErrorMessage = "La calificación debe estar entre 0 y 5")]
+        [Range(0, 5, ErrorMessage = "La calificaciï¿½n debe estar entre 0 y 5")]
         public decimal CalificacionPuntualidad { get; set; }
 
         [Display(Name = "Trabajo en Equipo")]
         [Required]
-        [Range(0, 5, ErrorMessage = "La calificación debe estar entre 0 y 5")]
+        [Range(0, 5, ErrorMessage = "La calificaciï¿½n debe estar entre 0 y 5")]
         public decimal CalificacionTrabajoEquipo { get; set; }
 
         [Display(Name = "Iniciativa y Proactividad")]
         [Required]
-        [Range(0, 5, ErrorMessage = "La calificación debe estar entre 0 y 5")]
+        [Range(0, 5, ErrorMessage = "La calificaciï¿½n debe estar entre 0 y 5")]
         public decimal CalificacionIniciativa { get; set; }
 
         [Display(Name = "Metas Propuestas")]
         [Required]
-        [Range(0, 100, ErrorMessage = "Valor inválido")]
+        [Range(0, 100, ErrorMessage = "Valor invï¿½lido")]
         public int MetasPropuestas { get; set; }
 
         [Display(Name = "Metas Alcanzadas")]
         [Required]
-        [Range(0, 100, ErrorMessage = "Valor inválido")]
+        [Range(0, 100, ErrorMessage = "Valor invï¿½lido")]
         public int MetasAlcanzadas { get; set; }
 
         [Display(Name = "Fortalezas")]
         [StringLength(1000)]
         public string? Fortalezas { get; set; }
 
-        [Display(Name = "Áreas de Mejora")]
+        [Display(Name = "ï¿½reas de Mejora")]
         [StringLength(1000)]
         public string? AreasMejora { get; set; }
 

@@ -1,0 +1,96 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.CalcularNominaViewModel
+@{
+    ViewData["Title"] = "Consultar Nómina";
+    var nombreMes = new DateTime(Model.Ano, Model.Mes, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-ES"));
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Nómina - @nombreMes</h1>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <form asp-action="Consultar" method="get" class="form-inline">
+            <div class="input-group">
+                <label class="input-group-text">Año:</label>
+                <input type="number" name="ano" value="@Model.Ano" class="form-control" min="2020" max="2030" />
+                <label class="input-group-text">Mes:</label>
+                <select name="mes" class="form-control">
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <option value="@i" selected="@(Model.Mes == i)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <strong>Total a Pagar:</strong> <span class="text-success h4">@Model.TotalAPagar.ToString("C")</span>
+            </div>
+            <div class="col-md-4">
+                <strong>Total Empleados:</strong> <span class="h4">@Model.TotalEmpleados</span>
+            </div>
+            <div class="col-md-4">
+                <strong>Promedio:</strong> <span class="h4">@((Model.TotalEmpleados > 0 ? Model.TotalAPagar / Model.TotalEmpleados : 0).ToString("C"))</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Puesto</th>
+                    <th>Departamento</th>
+                    <th>Salario Base</th>
+                    <th>Extras</th>
+                    <th>Deducciones</th>
+                    <th>Salario Neto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Nominas != null && Model.Nominas.Any())
+                {
+                    @foreach (var item in Model.Nominas)
+                    {
+                        <tr>
+                            <td>@item.NombreEmpleado</td>
+                            <td>@item.NombrePuesto</td>
+                            <td>@item.NombreDepartamento</td>
+                            <td>@item.SalarioBase.ToString("C")</td>
+                            <td>@item.TotalExtras.ToString("C")</td>
+                            <td>@item.TotalDeducciones.ToString("C")</td>
+                            <td><strong>@item.SalarioNeto.ToString("C")</strong></td>
+                            <td>
+                                <a asp-action="Historial" asp-route-id="@item.EmpleadoKey" class="btn btn-sm btn-info">Historial</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">No hay registros de nómina para este período</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</div>
+
