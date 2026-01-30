@@ -32,6 +32,11 @@ namespace HRM.SantaLucia.Web.Models.Entities
         [StringLength(500)]
         public string? Justificacion { get; set; }
 
+        public bool GoceSalario { get; set; } = false;
+
+        [StringLength(500)]
+        public string? MotivoPermiso { get; set; }
+
         [StringLength(100)]
         public string? UsuarioCreacion { get; set; }
 

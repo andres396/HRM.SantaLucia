@@ -90,7 +90,7 @@ namespace HRM.SantaLucia.Web.Controllers
 
                 try
                 {
-                    var empleadoKey = await _empleadoService.CreateAsync(model, User.Identity.Name ?? "SYSTEM");
+                    var empleadoKey = await _empleadoService.CreateAsync(model, User.Identity?.Name ?? "SYSTEM");
                     TempData["SuccessMessage"] = "Empleado creado exitosamente";
                     return RedirectToAction(nameof(Details), new { id = empleadoKey });
                 }
@@ -191,7 +191,7 @@ namespace HRM.SantaLucia.Web.Controllers
                 if (success)
                 {
                     TempData["SuccessMessage"] = "Empleado dado de baja exitosamente";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Details), new { id });
                 }
                 else
                 {
@@ -203,7 +203,41 @@ namespace HRM.SantaLucia.Web.Controllers
                 TempData["ErrorMessage"] = $"Error al dar de baja al empleado: {ex.Message}";
             }
 
-            return RedirectToAction(nameof(Delete), new { id });
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        // POST: Empleado/Activar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Activar(int id)
+        {
+            try
+            {
+                var empleado = await _empleadoService.GetByIdAsync(id);
+                if (empleado == null)
+                {
+                    return NotFound();
+                }
+
+                empleado.Activo = true;
+                empleado.FechaSalida = null;
+                var success = await _empleadoService.UpdateAsync(empleado);
+                
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Empleado reactivado exitosamente";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No se pudo reactivar al empleado";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error al reactivar al empleado: {ex.Message}";
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         private void LoadViewData()
@@ -213,9 +247,10 @@ namespace HRM.SantaLucia.Web.Controllers
             ViewBag.Bancos = new SelectList(_context.Bancos.Where(b => b.Activo).OrderBy(b => b.NombreBanco), "BancoKey", "NombreBanco");
 
             ViewBag.Generos = new SelectList(new[] { "Masculino", "Femenino", "Otro" });
-            ViewBag.EstadosCiviles = new SelectList(new[] { "Soltero", "Casado", "Divorciado", "Viudo", "Uni�n Libre" });
+            ViewBag.EstadosCiviles = new SelectList(new[] { "Soltero", "Casado", "Divorciado", "Viudo", "Union Libre" });
             ViewBag.TiposContrato = new SelectList(new[] { "Indefinido", "Plazo Fijo", "Por Servicios" });
-            ViewBag.Provincias = new SelectList(new[] { "San Jos�", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Lim�n" });
+            ViewBag.Provincias = new SelectList(new[] { "San Jose", "Alajuela", "Cartago", "Heredia", "Guanacaste", "Puntarenas", "Limon" });
+            ViewBag.Sedes = new SelectList(new[] { "Kamakiri", "Complejo Educativo" });
         }
     }
 }

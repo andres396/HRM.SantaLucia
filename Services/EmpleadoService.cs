@@ -57,10 +57,45 @@ namespace HRM.SantaLucia.Web.Services
             if (empleado == null)
                 return false;
 
-            // Mapear solo las propiedades que se pueden actualizar
-            _mapper.Map(model, empleado);
+            // Actualizar solo las propiedades editables (no las de navegación ni calculadas)
+            empleado.EmpleadoID = model.EmpleadoID;
+            empleado.Cedula = model.Cedula;
+            empleado.Nombre = model.Nombre;
+            empleado.Apellido1 = model.Apellido1;
+            empleado.Apellido2 = model.Apellido2;
+            empleado.FechaNacimiento = model.FechaNacimiento;
+            empleado.Genero = model.Genero;
+            empleado.EstadoCivil = model.EstadoCivil;
+            empleado.Nacionalidad = model.Nacionalidad;
+            empleado.Email = model.Email;
+            empleado.EmailPersonal = model.EmailPersonal;
+            empleado.Telefono = model.Telefono;
+            empleado.TelefonoEmergencia = model.TelefonoEmergencia;
+            empleado.ContactoEmergencia = model.ContactoEmergencia;
+            empleado.Provincia = model.Provincia;
+            empleado.Canton = model.Canton;
+            empleado.Distrito = model.Distrito;
+            empleado.DireccionExacta = model.DireccionExacta;
+            empleado.FechaIngreso = model.FechaIngreso;
+            empleado.FechaSalida = model.FechaSalida;
+            empleado.TipoContrato = model.TipoContrato;
+            empleado.PuestoKey = model.PuestoKey;
+            empleado.DepartamentoKey = model.DepartamentoKey;
+            empleado.BancoKey = model.BancoKey;
+            empleado.CuentaBancaria = model.CuentaBancaria;
+            empleado.Activo = model.Activo;
+            empleado.Sede = model.Sede;
+            empleado.SalarioBase = model.SalarioBase;
+            empleado.SalarioNeto = model.SalarioNeto;
+            empleado.Rebajos = model.Rebajos;
+            empleado.CCSS = model.CCSS;
+            empleado.JUPEMA = model.JUPEMA;
+            empleado.Magisterio = model.Magisterio;
+            empleado.PorcentajeBP = model.PorcentajeBP;
+            empleado.Bonos = model.Bonos;
+            
             empleado.FechaModificacion = DateTime.Now;
-            empleado.UsuarioModificacion = "SYSTEM"; // TODO: Obtener del usuario actual
+            empleado.UsuarioModificacion = "SYSTEM"; // TODO: Pasar usuario desde el controlador
 
             return await _repository.UpdateAsync(empleado);
         }

@@ -48,6 +48,8 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                 existing.MinutosTarde = asistencia.MinutosTarde;
                 existing.Estado = asistencia.Estado;
                 existing.Justificacion = asistencia.Justificacion;
+                existing.GoceSalario = asistencia.GoceSalario;
+                existing.MotivoPermiso = asistencia.MotivoPermiso;
                 existing.FechaModificacion = DateTime.Now;
                 existing.UsuarioModificacion = asistencia.UsuarioCreacion ?? "SYSTEM";
             }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using HRM.SantaLucia.Web.Services;
 using HRM.SantaLucia.Web.Models.ViewModels;
 using HRM.SantaLucia.Web.Data;
@@ -48,6 +49,16 @@ namespace HRM.SantaLucia.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Solicitar(VacacionesViewModel model)
         {
+            if (model.FechaInicio != default && model.FechaFin != default && model.FechaFin > model.FechaInicio)
+            {
+                model.DiasSolicitados = (model.FechaFin - model.FechaInicio).Days + 1;
+                ModelState.Remove("DiasSolicitados");
+            }
+            if (model.EmpleadoKey <= 0)
+                ModelState.AddModelError("EmpleadoKey", "Debe seleccionar un empleado");
+            if (model.FechaFin <= model.FechaInicio && model.FechaInicio != default)
+                ModelState.AddModelError("FechaFin", "La fecha de fin debe ser posterior a la fecha de inicio");
+
             if (ModelState.IsValid)
             {
                 try
@@ -63,6 +74,14 @@ namespace HRM.SantaLucia.Web.Controllers
                     // Calcular d�as solicitados
                     model.DiasSolicitados = (model.FechaFin - model.FechaInicio).Days + 1;
 
+                    if (model.DiasSolicitados < 1)
+                    {
+                        ModelState.AddModelError("FechaFin", "La fecha de fin debe ser posterior a la fecha de inicio");
+                        LoadViewData();
+                        return View(model);
+                    }
+
+                    model.Estado = "Pendiente";
                     var vacacionKey = await _vacacionesService.SolicitarAsync(model);
                     TempData["SuccessMessage"] = "Solicitud de vacaciones enviada exitosamente";
                     return RedirectToAction(nameof(MisSolicitudes), new { empleadoKey = model.EmpleadoKey });
@@ -77,6 +96,8 @@ namespace HRM.SantaLucia.Web.Controllers
                 }
             }
 
+            if (model.EmpleadoKey > 0)
+                model.DiasDisponibles = await _vacacionesService.GetDiasDisponiblesAsync(model.EmpleadoKey);
             LoadViewData();
             return View(model);
         }
@@ -97,8 +118,11 @@ namespace HRM.SantaLucia.Web.Controllers
         {
             try
             {
-                // TODO: Obtener el EmpleadoKey del usuario actual logueado
-                var aprobadorKey = 1; // Temporal
+                var aprobadorKey = await _context.Empleados
+                    .Where(e => e.Activo)
+                    .OrderBy(e => e.EmpleadoKey)
+                    .Select(e => e.EmpleadoKey)
+                    .FirstOrDefaultAsync();
 
                 var success = await _vacacionesService.AprobarAsync(id, aprobadorKey, observaciones);
                 if (success)
@@ -125,8 +149,11 @@ namespace HRM.SantaLucia.Web.Controllers
         {
             try
             {
-                // TODO: Obtener el EmpleadoKey del usuario actual logueado
-                var aprobadorKey = 1; // Temporal
+                var aprobadorKey = await _context.Empleados
+                    .Where(e => e.Activo)
+                    .OrderBy(e => e.EmpleadoKey)
+                    .Select(e => e.EmpleadoKey)
+                    .FirstOrDefaultAsync();
 
                 var success = await _vacacionesService.RechazarAsync(id, aprobadorKey, observaciones);
                 if (success)

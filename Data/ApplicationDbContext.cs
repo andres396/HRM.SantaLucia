@@ -58,6 +58,24 @@ namespace HRM.SantaLucia.Web.Data
                     .HasForeignKey(e => e.BancoKey)
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired(false);
+
+                // Configurar campos decimales salariales
+                entity.Property(e => e.SalarioBase)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.SalarioNeto)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Rebajos)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.CCSS)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.JUPEMA)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Magisterio)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.PorcentajeBP)
+                    .HasColumnType("decimal(5,2)");
+                entity.Property(e => e.Bonos)
+                    .HasColumnType("decimal(18,2)");
             });
 
             // Configuraci�n de Puesto
@@ -117,6 +135,26 @@ namespace HRM.SantaLucia.Web.Data
                     .WithMany()
                     .HasForeignKey(n => n.DepartamentoKey)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                // Configurar campos decimales editables
+                entity.Property(n => n.QTYHorasExtras)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.QTYHorasRegulares)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.PagoHorasRegulares)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.QTYDiasFeriados)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.Miscelaneo)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.Feriados)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.Aguinaldo)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.ExtrasQuincenales)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.DeduccionesQuincenales)
+                    .HasColumnType("decimal(18,2)");
             });
 
             // Configuraci�n de Asistencia

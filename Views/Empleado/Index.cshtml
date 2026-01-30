@@ -51,6 +51,7 @@
                     <th>Email</th>
                     <th>Puesto</th>
                     <th>Departamento</th>
+                    <th>Sede</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -67,6 +68,7 @@
                             <td>@item.Email</td>
                             <td>@item.NombrePuesto</td>
                             <td>@item.NombreDepartamento</td>
+                            <td>@(item.Sede ?? "-")</td>
                             <td>
                                 @if (item.Activo)
                                 {
@@ -87,7 +89,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="8" class="text-center">No se encontraron empleados</td>
+                        <td colspan="9" class="text-center">No se encontraron empleados</td>
                     </tr>
                 }
             </tbody>

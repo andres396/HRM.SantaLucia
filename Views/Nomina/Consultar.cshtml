@@ -2,11 +2,14 @@
 @{
     ViewData["Title"] = "Consultar Nómina";
     var nombreMes = new DateTime(Model.Ano, Model.Mes, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-ES"));
+    var quincenaTexto = Model.Quincena == 1 ? "Primera" : "Segunda";
+    var sedeTexto = string.IsNullOrEmpty(Model.Sede) ? "Todas" : Model.Sede;
 }
 
 <div class="row">
     <div class="col-12">
-        <h1 class="mb-4">Nómina - @nombreMes</h1>
+        <h1 class="mb-4">Nómina - @quincenaTexto Quincena de @nombreMes</h1>
+        <p class="text-muted">Sede: <strong>@sedeTexto</strong></p>
     </div>
 </div>
 
@@ -23,11 +26,33 @@
                         <option value="@i" selected="@(Model.Mes == i)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
                     }
                 </select>
+                <label class="input-group-text">Quincena:</label>
+                <select name="quincena" class="form-control">
+                    <option value="1" selected="@(Model.Quincena == 1)">Primera (1-15)</option>
+                    <option value="2" selected="@(Model.Quincena == 2)">Segunda (16-fin)</option>
+                </select>
+                <label class="input-group-text">Sede:</label>
+                <select name="sede" class="form-control">
+                    <option value="" selected="@(string.IsNullOrEmpty(Model.Sede))">Todas</option>
+                    <option value="Kamakiri" selected="@(Model.Sede == "Kamakiri")">Kamakiri</option>
+                    <option value="Complejo Educativo" selected="@(Model.Sede == "Complejo Educativo")">Complejo Educativo</option>
+                </select>
                 <button type="submit" class="btn btn-primary">Buscar</button>
             </div>
         </form>
     </div>
 </div>
+
+@if (Model.Nominas != null && Model.Nominas.Any())
+{
+    <div class="row mb-3">
+        <div class="col-md-12 text-end">
+            <a asp-action="ExportarExcel" asp-route-ano="@Model.Ano" asp-route-mes="@Model.Mes" asp-route-quincena="@Model.Quincena" asp-route-sede="@Model.Sede" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+            </a>
+        </div>
+    </div>
+}
 
 <div class="card mb-3">
     <div class="card-body">
@@ -74,6 +99,7 @@
                             <td>@item.TotalDeducciones.ToString("C")</td>
                             <td><strong>@item.SalarioNeto.ToString("C")</strong></td>
                             <td>
+                                <a asp-action="Edit" asp-route-id="@item.NominaKey" class="btn btn-sm btn-warning">Editar</a>
                                 <a asp-action="Historial" asp-route-id="@item.EmpleadoKey" class="btn btn-sm btn-info">Historial</a>
                             </td>
                         </tr>

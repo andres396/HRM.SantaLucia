@@ -114,6 +114,34 @@ namespace HRM.SantaLucia.Web.Models.Entities
         [StringLength(500)]
         public string? Foto { get; set; }
 
+        [StringLength(50)]
+        public string? Sede { get; set; } // Kamakiri o Complejo Educativo
+
+        // Campos salariales editables
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? SalarioBase { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? SalarioNeto { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? Rebajos { get; set; } // Cantidad total, no porcentaje
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? CCSS { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? JUPEMA { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? Magisterio { get; set; }
+
+        [Column(TypeName = "decimal(5,2)")]
+        public decimal? PorcentajeBP { get; set; } // 1% del BP
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? Bonos { get; set; }
+
         public bool Activo { get; set; } = true;
 
         [StringLength(100)]

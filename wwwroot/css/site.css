@@ -1,3 +1,15 @@
+/* ===== Branding Complejo Educativo Santa Lucía ===== */
+:root {
+  --santalucia-azul: #1a4d7a;
+  --santalucia-teal: #21BAD6;
+  --santalucia-purpura: #694BB7;
+  --santalucia-slate: #455A64;
+  --santalucia-amarillo: #F5A623;
+  --santalucia-rosa: #E91E63;
+  --santalucia-cyan-pastel: #80DEEA;
+  --santalucia-blanco: #ffffff;
+}
+
 html {
   font-size: 14px;
 }
@@ -9,7 +21,7 @@ html {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--santalucia-teal);
 }
 
 html {

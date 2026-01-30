@@ -36,6 +36,9 @@ namespace HRM.SantaLucia.Web.Services
 
         public async Task<int> SolicitarAsync(VacacionesViewModel model)
         {
+            if (model.DiasSolicitados < 1)
+                throw new InvalidOperationException("Debe indicar al menos un día de vacaciones (verifique las fechas de inicio y fin).");
+
             var diasDisponibles = await _repository.GetDiasDisponiblesAsync(model.EmpleadoKey);
 
             if (model.DiasSolicitados > diasDisponibles)

@@ -130,4 +130,4 @@ SELECT COUNT(*) AS TotalBancos FROM [DIM].[Banco]
 2. El script `DatosIniciales.sql` inserta datos de ejemplo. Si los ejecutas múltiples veces, puede generar duplicados
 3. Las columnas calculadas `NombreCompleto` y `Edad` en la tabla Empleado se actualizan automáticamente
 4. El índice único en `Asistencia(EmpleadoKey, FechaKey)` previene registros duplicados de asistencia para el mismo empleado en la misma fecha
-
+5. Se agregaron 2 script mas para hacer updates en las tablas, ejecutarlos despues de crear la base de datos y las tablas.

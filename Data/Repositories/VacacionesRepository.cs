@@ -47,9 +47,18 @@ namespace HRM.SantaLucia.Web.Data.Repositories
 
             vacacion.Estado = estado;
             vacacion.FechaAprobacion = DateTime.Now;
-            vacacion.AprobadorKey = aprobadorKey;
-            vacacion.Observaciones = observaciones;
+            vacacion.Observaciones = observaciones ?? vacacion.Observaciones;
             vacacion.FechaModificacion = DateTime.Now;
+
+            if (aprobadorKey > 0)
+            {
+                var aprobadorExiste = await _context.Empleados.AnyAsync(e => e.EmpleadoKey == aprobadorKey);
+                vacacion.AprobadorKey = aprobadorExiste ? aprobadorKey : null;
+            }
+            else
+            {
+                vacacion.AprobadorKey = null;
+            }
 
             await _context.SaveChangesAsync();
             return true;

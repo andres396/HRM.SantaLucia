@@ -2,7 +2,6 @@
 -- Script de creación de base de datos
 -- Sistema HRM Santa Lucía
 -- =============================================
-
 -- Crear base de datos si no existe
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'HRM_SantaLucia')
 BEGIN
@@ -10,10 +9,8 @@ BEGIN
     COLLATE SQL_Latin1_General_CP1_CI_AS
 END
 GO
-
 USE [HRM_SantaLucia]
 GO
-
 -- =============================================
 -- Crear esquemas
 -- =============================================
@@ -22,17 +19,14 @@ BEGIN
     EXEC('CREATE SCHEMA [DIM]')
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'FACT')
 BEGIN
     EXEC('CREATE SCHEMA [FACT]')
 END
 GO
-
 -- =============================================
 -- Tablas de Dimensiones (DIM)
 -- =============================================
-
 -- Tabla: Banco
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[DIM].[Banco]') AND type in (N'U'))
 BEGIN
@@ -50,7 +44,6 @@ BEGIN
     )
 END
 GO
-
 -- Tabla: Puesto
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[DIM].[Puesto]') AND type in (N'U'))
 BEGIN
@@ -70,7 +63,6 @@ BEGIN
     )
 END
 GO
-
 -- Tabla: Departamento
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[DIM].[Departamento]') AND type in (N'U'))
 BEGIN
@@ -89,7 +81,6 @@ BEGIN
     )
 END
 GO
-
 -- Tabla: Empleado
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[DIM].[Empleado]') AND type in (N'U'))
 BEGIN
@@ -133,11 +124,9 @@ BEGIN
     )
 END
 GO
-
 -- =============================================
 -- Tablas de Hechos (FACT)
 -- =============================================
-
 -- Tabla: Nomina
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[FACT].[Nomina]') AND type in (N'U'))
 BEGIN
@@ -167,7 +156,6 @@ BEGIN
     )
 END
 GO
-
 -- Tabla: Asistencia
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[FACT].[Asistencia]') AND type in (N'U'))
 BEGIN
@@ -189,7 +177,6 @@ BEGIN
     )
 END
 GO
-
 -- Tabla: Vacaciones
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[FACT].[Vacaciones]') AND type in (N'U'))
 BEGIN
@@ -212,7 +199,6 @@ BEGIN
     )
 END
 GO
-
 -- Tabla: Rendimiento
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[FACT].[Rendimiento]') AND type in (N'U'))
 BEGIN
@@ -234,7 +220,6 @@ BEGIN
     )
 END
 GO
-
 -- =============================================
 -- Crear Foreign Keys
 -- =============================================
@@ -249,7 +234,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Empleado_Departamento')
 BEGIN
     ALTER TABLE [DIM].[Empleado]
@@ -259,7 +243,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Empleado_Banco')
 BEGIN
     ALTER TABLE [DIM].[Empleado]
@@ -269,7 +252,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 -- Foreign Keys para Departamento (auto-referencia)
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Departamento_DepartamentoPadre')
 BEGIN
@@ -280,7 +262,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Departamento_Jefe')
 BEGIN
     ALTER TABLE [DIM].[Departamento]
@@ -290,7 +271,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 -- Foreign Keys para Nomina
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Nomina_Empleado')
 BEGIN
@@ -301,7 +281,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Nomina_Puesto')
 BEGIN
     ALTER TABLE [FACT].[Nomina]
@@ -311,7 +290,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Nomina_Departamento')
 BEGIN
     ALTER TABLE [FACT].[Nomina]
@@ -321,7 +299,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 -- Foreign Keys para Asistencia
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Asistencia_Empleado')
 BEGIN
@@ -332,7 +309,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 -- Foreign Keys para Vacaciones
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Vacaciones_Empleado')
 BEGIN
@@ -343,7 +319,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Vacaciones_Aprobador')
 BEGIN
     ALTER TABLE [FACT].[Vacaciones]
@@ -353,7 +328,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 -- Foreign Keys para Rendimiento
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Rendimiento_Empleado')
 BEGIN
@@ -364,7 +338,6 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Rendimiento_Evaluador')
 BEGIN
     ALTER TABLE [FACT].[Rendimiento]
@@ -374,11 +347,9 @@ BEGIN
     ON UPDATE NO ACTION
 END
 GO
-
 -- =============================================
 -- Crear Índices
 -- =============================================
-
 -- Índice único para Asistencia (EmpleadoKey, FechaKey)
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Asistencia_EmpleadoKey_FechaKey')
 BEGIN
@@ -386,7 +357,6 @@ BEGIN
     ON [FACT].[Asistencia] ([EmpleadoKey], [FechaKey])
 END
 GO
-
 -- Índices para mejorar rendimiento en búsquedas comunes
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Nomina_PeriodoKey')
 BEGIN
@@ -394,35 +364,30 @@ BEGIN
     ON [FACT].[Nomina] ([PeriodoKey])
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Nomina_EmpleadoKey_PeriodoKey')
 BEGIN
     CREATE NONCLUSTERED INDEX [IX_Nomina_EmpleadoKey_PeriodoKey]
     ON [FACT].[Nomina] ([EmpleadoKey], [PeriodoKey])
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Asistencia_FechaKey')
 BEGIN
     CREATE NONCLUSTERED INDEX [IX_Asistencia_FechaKey]
     ON [FACT].[Asistencia] ([FechaKey])
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Vacaciones_EmpleadoKey')
 BEGIN
     CREATE NONCLUSTERED INDEX [IX_Vacaciones_EmpleadoKey]
     ON [FACT].[Vacaciones] ([EmpleadoKey])
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Vacaciones_Estado')
 BEGIN
     CREATE NONCLUSTERED INDEX [IX_Vacaciones_Estado]
     ON [FACT].[Vacaciones] ([Estado])
 END
 GO
-
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Empleado_Activo')
 BEGIN
     CREATE NONCLUSTERED INDEX [IX_Empleado_Activo]
@@ -430,8 +395,4 @@ BEGIN
 END
 GO
 
-PRINT 'Base de datos HRM_SantaLucia creada exitosamente'
-PRINT 'Esquemas DIM y FACT creados'
-PRINT 'Todas las tablas, foreign keys e índices han sido creados'
-GO
 

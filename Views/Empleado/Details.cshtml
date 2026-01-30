@@ -17,6 +17,20 @@
             </div>
             <div class="col-md-6 text-end">
                 <a asp-action="Edit" asp-route-id="@Model.EmpleadoKey" class="btn btn-warning">Editar</a>
+                @if (Model.Activo)
+                {
+                    <form asp-action="Delete" asp-route-id="@Model.EmpleadoKey" method="post" style="display: inline;" onsubmit="return confirm('¿Está seguro de que desea dar de baja a este empleado?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">Dar de Baja</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Activar" asp-route-id="@Model.EmpleadoKey" method="post" style="display: inline;" onsubmit="return confirm('¿Está seguro de que desea reactivar a este empleado?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success">Reactivar</button>
+                    </form>
+                }
                 <a asp-action="Index" class="btn btn-secondary">Volver</a>
             </div>
         </div>
@@ -115,6 +129,9 @@
                     <dt class="col-sm-4">Cuenta Bancaria:</dt>
                     <dd class="col-sm-8">@(Model.CuentaBancaria ?? "-")</dd>
 
+                    <dt class="col-sm-4">Sede:</dt>
+                    <dd class="col-sm-8">@(Model.Sede ?? "-")</dd>
+
                     <dt class="col-sm-4">Estado:</dt>
                     <dd class="col-sm-8">
                         @if (Model.Activo)
@@ -126,6 +143,39 @@
                             <span class="badge bg-danger">Inactivo</span>
                         }
                     </dd>
+                </dl>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-12">
+                <h6>Información Salarial</h6>
+                <dl class="row">
+                    <dt class="col-sm-3">Salario Base:</dt>
+                    <dd class="col-sm-3">@(Model.SalarioBase?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">Salario Neto:</dt>
+                    <dd class="col-sm-3">@(Model.SalarioNeto?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">Rebajos:</dt>
+                    <dd class="col-sm-3">@(Model.Rebajos?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">CCSS:</dt>
+                    <dd class="col-sm-3">@(Model.CCSS?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">JUPEMA:</dt>
+                    <dd class="col-sm-3">@(Model.JUPEMA?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">Magisterio:</dt>
+                    <dd class="col-sm-3">@(Model.Magisterio?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">1% del BP:</dt>
+                    <dd class="col-sm-3">@(Model.PorcentajeBP?.ToString("F2") + "%" ?? "-")</dd>
+
+                    <dt class="col-sm-3">Bonos:</dt>
+                    <dd class="col-sm-3">@(Model.Bonos?.ToString("C") ?? "-")</dd>
                 </dl>
             </div>
         </div>

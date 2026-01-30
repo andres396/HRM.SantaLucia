@@ -36,6 +36,13 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [Display(Name = "Justificaci�n")]
         public string? Justificacion { get; set; }
 
+        [Display(Name = "Goce de Salario")]
+        public bool GoceSalario { get; set; } = false;
+
+        [Display(Name = "Motivo del Permiso")]
+        [StringLength(500)]
+        public string? MotivoPermiso { get; set; }
+
         // Propiedades de solo lectura
         public string? NombreEmpleado { get; set; }
         public string? DepartamentoEmpleado { get; set; }

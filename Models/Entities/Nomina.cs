@@ -24,7 +24,10 @@ namespace HRM.SantaLucia.Web.Models.Entities
         public virtual Departamento Departamento { get; set; }
 
         [Required]
-        public int PeriodoKey { get; set; } // Formato: yyyyMM
+        public int PeriodoKey { get; set; } // Formato: yyyyMMdd (quincenal)
+
+        [StringLength(50)]
+        public string? Sede { get; set; } // Kamakiri o Complejo Educativo
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal SalarioBase { get; set; }
@@ -34,6 +37,10 @@ namespace HRM.SantaLucia.Web.Models.Entities
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal HorasExtra { get; set; }
+
+        /// <summary>Pago por horas regulares = (SalarioBase/240) * QTYHorasRegulares</summary>
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal PagoHorasRegulares { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal PagoHorasExtra { get; set; }
@@ -61,6 +68,32 @@ namespace HRM.SantaLucia.Web.Models.Entities
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal SalarioNeto { get; set; }
+
+        // Campos editables en nómina
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal QTYHorasExtras { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal QTYHorasRegulares { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Miscelaneo { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal QTYDiasFeriados { get; set; }
+
+        /// <summary>Monto feriados = SalarioBrutoDiario * 2 * QTYDiasFeriados</summary>
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Feriados { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Aguinaldo { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal ExtrasQuincenales { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal DeduccionesQuincenales { get; set; }
 
         [StringLength(100)]
         public string? UsuarioCreacion { get; set; }

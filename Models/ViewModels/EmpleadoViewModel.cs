@@ -108,6 +108,42 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
 
         public string? Foto { get; set; }
 
+        [Display(Name = "Sede")]
+        public string? Sede { get; set; }
+
+        // Campos salariales editables
+        [Display(Name = "Salario Base")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? SalarioBase { get; set; }
+
+        [Display(Name = "Salario Neto")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? SalarioNeto { get; set; }
+
+        [Display(Name = "Rebajos")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? Rebajos { get; set; }
+
+        [Display(Name = "CCSS")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? CCSS { get; set; }
+
+        [Display(Name = "JUPEMA")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? JUPEMA { get; set; }
+
+        [Display(Name = "Magisterio")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? Magisterio { get; set; }
+
+        [Display(Name = "1% del BP")]
+        [DisplayFormat(DataFormatString = "{0:F2}%", ApplyFormatInEditMode = true)]
+        public decimal? PorcentajeBP { get; set; }
+
+        [Display(Name = "Bonos")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal? Bonos { get; set; }
+
         [Display(Name = "Activo")]
         public bool Activo { get; set; } = true;
 
