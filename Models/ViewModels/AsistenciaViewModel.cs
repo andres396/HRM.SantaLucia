@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HRM.SantaLucia.Web.Models.ViewModels
 {
     public class AsistenciaViewModel
@@ -31,8 +33,15 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [Required(ErrorMessage = "El estado es requerido")]
         public string Estado { get; set; }
 
-        [Display(Name = "Justificación")]
+        [Display(Name = "Justificaciï¿½n")]
         public string? Justificacion { get; set; }
+
+        [Display(Name = "Goce de Salario")]
+        public bool GoceSalario { get; set; } = false;
+
+        [Display(Name = "Motivo del Permiso")]
+        [StringLength(500)]
+        public string? MotivoPermiso { get; set; }
 
         // Propiedades de solo lectura
         public string? NombreEmpleado { get; set; }

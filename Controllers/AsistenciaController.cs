@@ -1,3 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using HRM.SantaLucia.Web.Services;
+using HRM.SantaLucia.Web.Models.ViewModels;
+using HRM.SantaLucia.Web.Data;
+
 namespace HRM.SantaLucia.Web.Controllers
 {
     public class AsistenciaController : Controller
@@ -78,16 +84,16 @@ namespace HRM.SantaLucia.Web.Controllers
         }
 
         // GET: Asistencia/Resumen
-        public async Task<IActionResult> Resumen(int? año, int? mes)
+        public async Task<IActionResult> Resumen(int? ano, int? mes)
         {
-            año ??= DateTime.Now.Year;
+            ano ??= DateTime.Now.Year;
             mes ??= DateTime.Now.Month;
 
-            var resumen = await _asistenciaService.GetResumenMensualAsync(año.Value, mes.Value);
+            var resumen = await _asistenciaService.GetResumenMensualAsync(ano.Value, mes.Value);
 
-            ViewBag.Año = año;
+            ViewBag.Ano = ano;
             ViewBag.Mes = mes;
-            ViewBag.NombreMes = new DateTime(año.Value, mes.Value, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-ES"));
+            ViewBag.NombreMes = new DateTime(ano.Value, mes.Value, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-ES"));
 
             return View(resumen);
         }

@@ -1,0 +1,54 @@
+@model IEnumerable<HRM.SantaLucia.Web.Models.ViewModels.NominaViewModel>
+@{
+    ViewData["Title"] = "Historial de Nómina";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Historial de Nómina</h1>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Período</th>
+                    <th>Salario Base</th>
+                    <th>Extras</th>
+                    <th>Deducciones</th>
+                    <th>Salario Neto</th>
+                    <th>Horas Trabajadas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model.OrderByDescending(n => n.Ano).ThenByDescending(n => n.Mes))
+                    {
+                        <tr>
+                            <td>@item.NombreMes</td>
+                            <td>@item.SalarioBase.ToString("C")</td>
+                            <td>@item.TotalExtras.ToString("C")</td>
+                            <td>@item.TotalDeducciones.ToString("C")</td>
+                            <td><strong>@item.SalarioNeto.ToString("C")</strong></td>
+                            <td>@item.HorasTrabajadas.ToString("F2")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">No hay registros de nómina</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="javascript:history.back()" class="btn btn-secondary">Volver</a>
+</div>
+

@@ -1,3 +1,5 @@
+using HRM.SantaLucia.Web.Models.Entities;
+
 namespace HRM.SantaLucia.Web.Data.Repositories
 {
     public interface IVacacionesRepository

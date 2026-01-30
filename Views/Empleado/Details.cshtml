@@ -1,0 +1,184 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.EmpleadoViewModel
+@{
+    ViewData["Title"] = "Detalles del Empleado";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Detalles del Empleado</h1>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>@Model.NombreCompleto</h5>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Edit" asp-route-id="@Model.EmpleadoKey" class="btn btn-warning">Editar</a>
+                @if (Model.Activo)
+                {
+                    <form asp-action="Delete" asp-route-id="@Model.EmpleadoKey" method="post" style="display: inline;" onsubmit="return confirm('¿Está seguro de que desea dar de baja a este empleado?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">Dar de Baja</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Activar" asp-route-id="@Model.EmpleadoKey" method="post" style="display: inline;" onsubmit="return confirm('¿Está seguro de que desea reactivar a este empleado?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success">Reactivar</button>
+                    </form>
+                }
+                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Información Personal</h6>
+                <dl class="row">
+                    <dt class="col-sm-4">Código:</dt>
+                    <dd class="col-sm-8">@Model.EmpleadoID</dd>
+
+                    <dt class="col-sm-4">Cédula:</dt>
+                    <dd class="col-sm-8">@Model.Cedula</dd>
+
+                    <dt class="col-sm-4">Nombre Completo:</dt>
+                    <dd class="col-sm-8">@Model.NombreCompleto</dd>
+
+                    <dt class="col-sm-4">Fecha de Nacimiento:</dt>
+                    <dd class="col-sm-8">@Model.FechaNacimiento.ToString("dd/MM/yyyy")</dd>
+
+                    <dt class="col-sm-4">Edad:</dt>
+                    <dd class="col-sm-8">@Model.Edad años</dd>
+
+                    <dt class="col-sm-4">Género:</dt>
+                    <dd class="col-sm-8">@Model.Genero</dd>
+
+                    <dt class="col-sm-4">Estado Civil:</dt>
+                    <dd class="col-sm-8">@Model.EstadoCivil</dd>
+
+                    <dt class="col-sm-4">Nacionalidad:</dt>
+                    <dd class="col-sm-8">@Model.Nacionalidad</dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <h6>Contacto</h6>
+                <dl class="row">
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4">Email Personal:</dt>
+                    <dd class="col-sm-8">@(Model.EmailPersonal ?? "-")</dd>
+
+                    <dt class="col-sm-4">Teléfono:</dt>
+                    <dd class="col-sm-8">@Model.Telefono</dd>
+
+                    <dt class="col-sm-4">Teléfono Emergencia:</dt>
+                    <dd class="col-sm-8">@(Model.TelefonoEmergencia ?? "-")</dd>
+
+                    <dt class="col-sm-4">Contacto Emergencia:</dt>
+                    <dd class="col-sm-8">@(Model.ContactoEmergencia ?? "-")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Dirección</h6>
+                <dl class="row">
+                    <dt class="col-sm-4">Provincia:</dt>
+                    <dd class="col-sm-8">@Model.Provincia</dd>
+
+                    <dt class="col-sm-4">Cantón:</dt>
+                    <dd class="col-sm-8">@Model.Canton</dd>
+
+                    <dt class="col-sm-4">Distrito:</dt>
+                    <dd class="col-sm-8">@Model.Distrito</dd>
+
+                    <dt class="col-sm-4">Dirección:</dt>
+                    <dd class="col-sm-8">@Model.DireccionExacta</dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <h6>Información Laboral</h6>
+                <dl class="row">
+                    <dt class="col-sm-4">Puesto:</dt>
+                    <dd class="col-sm-8">@(Model.NombrePuesto ?? "-")</dd>
+
+                    <dt class="col-sm-4">Departamento:</dt>
+                    <dd class="col-sm-8">@(Model.NombreDepartamento ?? "-")</dd>
+
+                    <dt class="col-sm-4">Fecha de Ingreso:</dt>
+                    <dd class="col-sm-8">@Model.FechaIngreso.ToString("dd/MM/yyyy")</dd>
+
+                    <dt class="col-sm-4">Fecha de Salida:</dt>
+                    <dd class="col-sm-8">@(Model.FechaSalida?.ToString("dd/MM/yyyy") ?? "-")</dd>
+
+                    <dt class="col-sm-4">Tipo de Contrato:</dt>
+                    <dd class="col-sm-8">@Model.TipoContrato</dd>
+
+                    <dt class="col-sm-4">Banco:</dt>
+                    <dd class="col-sm-8">@(Model.NombreBanco ?? "-")</dd>
+
+                    <dt class="col-sm-4">Cuenta Bancaria:</dt>
+                    <dd class="col-sm-8">@(Model.CuentaBancaria ?? "-")</dd>
+
+                    <dt class="col-sm-4">Sede:</dt>
+                    <dd class="col-sm-8">@(Model.Sede ?? "-")</dd>
+
+                    <dt class="col-sm-4">Estado:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Activo)
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactivo</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-12">
+                <h6>Información Salarial</h6>
+                <dl class="row">
+                    <dt class="col-sm-3">Salario Base:</dt>
+                    <dd class="col-sm-3">@(Model.SalarioBase?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">Salario Neto:</dt>
+                    <dd class="col-sm-3">@(Model.SalarioNeto?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">Rebajos:</dt>
+                    <dd class="col-sm-3">@(Model.Rebajos?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">CCSS:</dt>
+                    <dd class="col-sm-3">@(Model.CCSS?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">JUPEMA:</dt>
+                    <dd class="col-sm-3">@(Model.JUPEMA?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">Magisterio:</dt>
+                    <dd class="col-sm-3">@(Model.Magisterio?.ToString("C") ?? "-")</dd>
+
+                    <dt class="col-sm-3">1% del BP:</dt>
+                    <dd class="col-sm-3">@(Model.PorcentajeBP?.ToString("F2") + "%" ?? "-")</dd>
+
+                    <dt class="col-sm-3">Bonos:</dt>
+                    <dd class="col-sm-3">@(Model.Bonos?.ToString("C") ?? "-")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+

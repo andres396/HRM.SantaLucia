@@ -8,9 +8,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Configurar DbContext
+// Configurar DbContext con retry logic para errores transitorios
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    
+    options.UseSqlServer(
+        connectionString,
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)
+    );
+});
 
 // Configurar AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
@@ -28,7 +38,7 @@ builder.Services.AddScoped<IAsistenciaService, AsistenciaService>();
 builder.Services.AddScoped<IVacacionesService, VacacionesService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-// Configurar sesión
+// Configurar sesiï¿½n
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

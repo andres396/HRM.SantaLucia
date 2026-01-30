@@ -26,11 +26,14 @@ namespace HRM.SantaLucia.Web.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuración de Empleado
+            // Configuraciï¿½n de Empleado
             modelBuilder.Entity<Empleado>(entity =>
             {
                 entity.ToTable("Empleado", "DIM");
                 entity.HasKey(e => e.EmpleadoKey);
+
+                entity.Property(e => e.EmpleadoKey)
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.NombreCompleto)
                     .HasComputedColumnSql("[Nombre] + ' ' + [Apellido1] + ' ' + ISNULL([Apellido2], '')", stored: true);
@@ -41,20 +44,41 @@ namespace HRM.SantaLucia.Web.Data
                 entity.HasOne(e => e.Puesto)
                     .WithMany(p => p.Empleados)
                     .HasForeignKey(e => e.PuestoKey)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
 
                 entity.HasOne(e => e.Departamento)
                     .WithMany(d => d.Empleados)
                     .HasForeignKey(e => e.DepartamentoKey)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
 
                 entity.HasOne(e => e.Banco)
                     .WithMany()
                     .HasForeignKey(e => e.BancoKey)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+
+                // Configurar campos decimales salariales
+                entity.Property(e => e.SalarioBase)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.SalarioNeto)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Rebajos)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.CCSS)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.JUPEMA)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Magisterio)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(e => e.PorcentajeBP)
+                    .HasColumnType("decimal(5,2)");
+                entity.Property(e => e.Bonos)
+                    .HasColumnType("decimal(18,2)");
             });
 
-            // Configuración de Puesto
+            // Configuraciï¿½n de Puesto
             modelBuilder.Entity<Puesto>(entity =>
             {
                 entity.ToTable("Puesto", "DIM");
@@ -67,7 +91,7 @@ namespace HRM.SantaLucia.Web.Data
                     .HasColumnType("decimal(18,2)");
             });
 
-            // Configuración de Departamento
+            // Configuraciï¿½n de Departamento
             modelBuilder.Entity<Departamento>(entity =>
             {
                 entity.ToTable("Departamento", "DIM");
@@ -84,14 +108,14 @@ namespace HRM.SantaLucia.Web.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Configuración de Banco
+            // Configuraciï¿½n de Banco
             modelBuilder.Entity<Banco>(entity =>
             {
                 entity.ToTable("Banco", "DIM");
                 entity.HasKey(b => b.BancoKey);
             });
 
-            // Configuración de Nómina
+            // Configuraciï¿½n de Nï¿½mina
             modelBuilder.Entity<Nomina>(entity =>
             {
                 entity.ToTable("Nomina", "FACT");
@@ -111,9 +135,29 @@ namespace HRM.SantaLucia.Web.Data
                     .WithMany()
                     .HasForeignKey(n => n.DepartamentoKey)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                // Configurar campos decimales editables
+                entity.Property(n => n.QTYHorasExtras)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.QTYHorasRegulares)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.PagoHorasRegulares)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.QTYDiasFeriados)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.Miscelaneo)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.Feriados)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.Aguinaldo)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.ExtrasQuincenales)
+                    .HasColumnType("decimal(18,2)");
+                entity.Property(n => n.DeduccionesQuincenales)
+                    .HasColumnType("decimal(18,2)");
             });
 
-            // Configuración de Asistencia
+            // Configuraciï¿½n de Asistencia
             modelBuilder.Entity<Asistencia>(entity =>
             {
                 entity.ToTable("Asistencia", "FACT");
@@ -128,7 +172,7 @@ namespace HRM.SantaLucia.Web.Data
                     .IsUnique();
             });
 
-            // Configuración de Vacaciones
+            // Configuraciï¿½n de Vacaciones
             modelBuilder.Entity<Vacaciones>(entity =>
             {
                 entity.ToTable("Vacaciones", "FACT");
@@ -145,7 +189,7 @@ namespace HRM.SantaLucia.Web.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Configuración de Rendimiento
+            // Configuraciï¿½n de Rendimiento
             modelBuilder.Entity<Rendimiento>(entity =>
             {
                 entity.ToTable("Rendimiento", "FACT");

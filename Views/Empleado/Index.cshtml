@@ -1,0 +1,99 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.EmpleadoListViewModel
+@{
+    ViewData["Title"] = "Empleados";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Empleados</h1>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12 text-end">
+        <a asp-action="Create" class="btn btn-success">Nuevo Empleado</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <form asp-action="Index" method="get" class="form-inline">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Buscar por nombre, cédula o código..." />
+                </div>
+                <div class="col-md-3">
+                    <select name="departamentoFilter" class="form-control" asp-items="ViewBag.Departamentos">
+                        <option value="">-- Todos los departamentos --</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <input type="checkbox" name="soloActivos" value="true" checked="@Model.SoloActivos" class="form-check-input" />
+                        <label class="form-check-label">Solo Activos</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                    <a asp-action="Index" class="btn btn-secondary">Limpiar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Total de registros: @Model.TotalRegistros</p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre Completo</th>
+                    <th>Cédula</th>
+                    <th>Email</th>
+                    <th>Puesto</th>
+                    <th>Departamento</th>
+                    <th>Sede</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Empleados != null && Model.Empleados.Any())
+                {
+                    @foreach (var item in Model.Empleados)
+                    {
+                        <tr>
+                            <td>@item.EmpleadoID</td>
+                            <td>@item.NombreCompleto</td>
+                            <td>@item.Cedula</td>
+                            <td>@item.Email</td>
+                            <td>@item.NombrePuesto</td>
+                            <td>@item.NombreDepartamento</td>
+                            <td>@(item.Sede ?? "-")</td>
+                            <td>
+                                @if (item.Activo)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactivo</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.EmpleadoKey" class="btn btn-sm btn-info">Ver</a>
+                                <a asp-action="Edit" asp-route-id="@item.EmpleadoKey" class="btn btn-sm btn-warning">Editar</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center">No se encontraron empleados</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

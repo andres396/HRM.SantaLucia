@@ -1,3 +1,8 @@
+using AutoMapper;
+using HRM.SantaLucia.Web.Data.Repositories;
+using HRM.SantaLucia.Web.Models.Entities;
+using HRM.SantaLucia.Web.Models.ViewModels;
+
 namespace HRM.SantaLucia.Web.Services
 {
     public class AsistenciaService : IAsistenciaService
@@ -30,7 +35,8 @@ namespace HRM.SantaLucia.Web.Services
         {
             var asistencia = _mapper.Map<Asistencia>(model);
             asistencia.FechaKey = int.Parse(model.Fecha.ToString("yyyyMMdd"));
-            asistencia.FechaRegistro = DateTime.Now;
+            asistencia.FechaCreacion = DateTime.Now;
+            asistencia.UsuarioCreacion = "SYSTEM"; // TODO: Obtener del usuario actual autenticado
 
             // Calcular horas trabajadas y minutos tarde
             if (model.HoraEntrada.HasValue && model.HoraSalida.HasValue)
@@ -55,9 +61,12 @@ namespace HRM.SantaLucia.Web.Services
             return _mapper.Map<IEnumerable<AsistenciaViewModel>>(asistencias);
         }
 
-        public async Task<Dictionary<string, int>> GetResumenMensualAsync(int año, int mes)
+        public async Task<IEnumerable<AsistenciaViewModel>> GetResumenMensualAsync(int ano, int mes)
         {
-            return await _repository.GetResumenMensualAsync(año, mes);
+            var desde = new DateTime(ano, mes, 1);
+            var hasta = desde.AddMonths(1).AddDays(-1);
+            var asistencias = await _repository.GetByPeriodoAsync(desde, hasta);
+            return _mapper.Map<IEnumerable<AsistenciaViewModel>>(asistencias);
         }
     }
 }

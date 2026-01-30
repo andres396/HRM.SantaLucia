@@ -1,0 +1,110 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.RendimientoViewModel
+@{
+    ViewData["Title"] = "Nueva Evaluación de Rendimiento";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <h1>Nueva Evaluación de Rendimiento</h1>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="EmpleadoKey" class="control-label"></label>
+                <select asp-for="EmpleadoKey" class="form-control" asp-items="ViewBag.Empleados">
+                    <option value="">-- Seleccione un empleado --</option>
+                </select>
+                <span asp-validation-for="EmpleadoKey" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="EvaluadorKey" class="control-label"></label>
+                <select asp-for="EvaluadorKey" class="form-control" asp-items="ViewBag.Evaluadores">
+                    <option value="">-- Seleccione un evaluador --</option>
+                </select>
+                <span asp-validation-for="EvaluadorKey" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FechaEvaluacion" class="control-label"></label>
+                <input asp-for="FechaEvaluacion" class="form-control" type="date" />
+                <span asp-validation-for="FechaEvaluacion" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PeriodoEvaluacion" class="control-label"></label>
+                <input asp-for="PeriodoEvaluacion" class="form-control" placeholder="Ej: Q1 2024, Enero 2024" />
+                <span asp-validation-for="PeriodoEvaluacion" class="text-danger"></span>
+            </div>
+
+            <h5 class="mt-4 mb-3">Calificaciones (0-5)</h5>
+
+            <div class="form-group mb-3">
+                <label asp-for="CalificacionConocimiento" class="control-label"></label>
+                <input asp-for="CalificacionConocimiento" class="form-control" type="number" step="0.1" min="0" max="5" />
+                <span asp-validation-for="CalificacionConocimiento" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CalificacionCalidad" class="control-label"></label>
+                <input asp-for="CalificacionCalidad" class="form-control" type="number" step="0.1" min="0" max="5" />
+                <span asp-validation-for="CalificacionCalidad" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CalificacionPuntualidad" class="control-label"></label>
+                <input asp-for="CalificacionPuntualidad" class="form-control" type="number" step="0.1" min="0" max="5" />
+                <span asp-validation-for="CalificacionPuntualidad" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CalificacionTrabajoEquipo" class="control-label"></label>
+                <input asp-for="CalificacionTrabajoEquipo" class="form-control" type="number" step="0.1" min="0" max="5" />
+                <span asp-validation-for="CalificacionTrabajoEquipo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CalificacionIniciativa" class="control-label"></label>
+                <input asp-for="CalificacionIniciativa" class="form-control" type="number" step="0.1" min="0" max="5" />
+                <span asp-validation-for="CalificacionIniciativa" class="text-danger"></span>
+            </div>
+
+            <h5 class="mt-4 mb-3">Metas</h5>
+
+            <div class="form-group mb-3">
+                <label asp-for="MetasPropuestas" class="control-label"></label>
+                <input asp-for="MetasPropuestas" class="form-control" type="number" min="0" />
+                <span asp-validation-for="MetasPropuestas" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="MetasAlcanzadas" class="control-label"></label>
+                <input asp-for="MetasAlcanzadas" class="form-control" type="number" min="0" />
+                <span asp-validation-for="MetasAlcanzadas" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Comentarios" class="control-label"></label>
+                <textarea asp-for="Comentarios" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Comentarios" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Guardar Evaluación" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

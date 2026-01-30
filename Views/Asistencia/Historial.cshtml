@@ -1,0 +1,85 @@
+@model IEnumerable<HRM.SantaLucia.Web.Models.ViewModels.AsistenciaViewModel>
+@{
+    ViewData["Title"] = "Historial de Asistencia";
+    var empleadoKey = ViewBag.EmpleadoKey as int?;
+    var desde = ViewBag.Desde as DateTime?;
+    var hasta = ViewBag.Hasta as DateTime?;
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Historial de Asistencia</h1>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <form asp-action="Historial" method="get" class="form-inline">
+            <input type="hidden" name="id" value="@empleadoKey" />
+            <div class="input-group">
+                <label class="input-group-text">Desde:</label>
+                <input type="date" name="desde" value="@desde?.ToString("yyyy-MM-dd")" class="form-control" />
+                <label class="input-group-text">Hasta:</label>
+                <input type="date" name="hasta" value="@hasta?.ToString("yyyy-MM-dd")" class="form-control" />
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora Entrada</th>
+                    <th>Hora Salida</th>
+                    <th>Horas Trabajadas</th>
+                    <th>Estado</th>
+                    <th>Justificación</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                            <td>@(item.HoraEntrada?.ToString(@"hh\:mm") ?? "-")</td>
+                            <td>@(item.HoraSalida?.ToString(@"hh\:mm") ?? "-")</td>
+                            <td>@item.HorasTrabajadas.ToString("F2")</td>
+                            <td>
+                                @if (item.Estado == "Presente")
+                                {
+                                    <span class="badge bg-success">@item.Estado</span>
+                                }
+                                else if (item.Estado == "Tarde")
+                                {
+                                    <span class="badge bg-warning">@item.Estado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@item.Estado</span>
+                                }
+                            </td>
+                            <td>@item.Justificacion</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">No hay registros de asistencia para este período</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</div>
+

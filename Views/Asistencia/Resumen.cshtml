@@ -1,0 +1,79 @@
+@model IEnumerable<HRM.SantaLucia.Web.Models.ViewModels.AsistenciaViewModel>
+@{
+    ViewData["Title"] = "Resumen Mensual de Asistencia";
+    var ano = ViewBag.Ano as int?;
+    var mes = ViewBag.Mes as int?;
+    var nombreMes = ViewBag.NombreMes as string;
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Resumen Mensual de Asistencia</h1>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <form asp-action="Resumen" method="get" class="form-inline">
+            <div class="input-group">
+                <label class="input-group-text">Año:</label>
+                <input type="number" name="ano" value="@ano" class="form-control" min="2020" max="2030" />
+                <label class="input-group-text">Mes:</label>
+                <select name="mes" class="form-control">
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <option value="@i" selected="@(mes == i)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>@nombreMes</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Días Presentes</th>
+                    <th>Días Ausentes</th>
+                    <th>Días Tarde</th>
+                    <th>Total Horas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model.GroupBy(a => a.EmpleadoKey))
+                    {
+                        var empleado = item.First();
+                        var diasPresentes = item.Count(a => a.Estado == "Presente");
+                        var diasAusentes = item.Count(a => a.Estado == "Ausente");
+                        var diasTarde = item.Count(a => a.Estado == "Tarde");
+                        var totalHoras = item.Sum(a => a.HorasTrabajadas);
+                        
+                        <tr>
+                            <td>@empleado.NombreEmpleado</td>
+                            <td>@diasPresentes</td>
+                            <td>@diasAusentes</td>
+                            <td>@diasTarde</td>
+                            <td>@totalHoras.ToString("F2")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">No hay registros de asistencia para este período</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

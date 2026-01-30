@@ -1,0 +1,83 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.AsistenciaViewModel
+@{
+    ViewData["Title"] = "Registrar Asistencia";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h1>Registrar Asistencia</h1>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Registrar" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="EmpleadoKey" class="control-label"></label>
+                <select asp-for="EmpleadoKey" class="form-control" asp-items="ViewBag.Empleados">
+                    <option value="">-- Seleccione un empleado --</option>
+                </select>
+                <span asp-validation-for="EmpleadoKey" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Fecha" class="control-label"></label>
+                <input asp-for="Fecha" class="form-control" type="date" />
+                <span asp-validation-for="Fecha" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="HoraEntrada" class="control-label"></label>
+                <input asp-for="HoraEntrada" class="form-control" type="time" />
+                <span asp-validation-for="HoraEntrada" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="HoraSalida" class="control-label"></label>
+                <input asp-for="HoraSalida" class="form-control" type="time" />
+                <span asp-validation-for="HoraSalida" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Estado" class="control-label"></label>
+                <select asp-for="Estado" class="form-control" asp-items="ViewBag.Estados">
+                    <option value="">-- Seleccione un estado --</option>
+                </select>
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Justificacion" class="control-label"></label>
+                <textarea asp-for="Justificacion" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Justificacion" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="form-check">
+                    <input asp-for="GoceSalario" class="form-check-input" type="checkbox" />
+                    <label asp-for="GoceSalario" class="form-check-label"></label>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="MotivoPermiso" class="control-label"></label>
+                <textarea asp-for="MotivoPermiso" class="form-control" rows="3" placeholder="Ingrese el motivo del permiso si aplica"></textarea>
+                <span asp-validation-for="MotivoPermiso" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Registrar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

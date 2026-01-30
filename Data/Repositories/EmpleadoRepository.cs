@@ -85,18 +85,90 @@ namespace HRM.SantaLucia.Web.Data.Repositories
 
         public async Task<int> CreateAsync(Empleado empleado)
         {
-            _context.Empleados.Add(empleado);
-            await _context.SaveChangesAsync();
-            return empleado.EmpleadoKey;
+            try
+            {
+                // Asegurar que las propiedades de navegaciÃ³n no se incluyan
+                empleado.Puesto = null;
+                empleado.Departamento = null;
+                empleado.Banco = null;
+                
+                // Asegurar que EmpleadoKey sea 0 para nueva entidad
+                empleado.EmpleadoKey = 0;
+                
+                _context.Empleados.Add(empleado);
+                
+                // Marcar las columnas calculadas como no modificadas para que EF no intente guardarlas
+                var entry = _context.Entry(empleado);
+                entry.Property(e => e.NombreCompleto).IsModified = false;
+                entry.Property(e => e.Edad).IsModified = false;
+                
+                await _context.SaveChangesAsync();
+                return empleado.EmpleadoKey;
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+            {
+                // Capturar errores especÃ­ficos de base de datos
+                var innerMessage = dbEx.InnerException?.Message ?? dbEx.Message;
+                throw new Exception($"Error de base de datos al guardar el empleado: {innerMessage}", dbEx);
+            }
+            catch (Exception ex)
+            {
+                // Log del error completo para debugging
+                throw new Exception($"Error al guardar el empleado: {ex.Message}. Inner Exception: {ex.InnerException?.Message}", ex);
+            }
         }
 
         public async Task<bool> UpdateAsync(Empleado empleado)
         {
-            empleado.FechaModificacion = DateTime.Now;
-            _context.Entry(empleado).State = EntityState.Modified;
-
             try
             {
+                var existing = await _context.Empleados.FindAsync(empleado.EmpleadoKey);
+                if (existing == null)
+                    return false;
+
+                // Actualizar solo las propiedades editables (no las calculadas ni de navegaciÃ³n)
+                existing.EmpleadoID = empleado.EmpleadoID;
+                existing.Cedula = empleado.Cedula;
+                existing.Nombre = empleado.Nombre;
+                existing.Apellido1 = empleado.Apellido1;
+                existing.Apellido2 = empleado.Apellido2;
+                existing.FechaNacimiento = empleado.FechaNacimiento;
+                existing.Genero = empleado.Genero;
+                existing.EstadoCivil = empleado.EstadoCivil;
+                existing.Nacionalidad = empleado.Nacionalidad;
+                existing.Email = empleado.Email;
+                existing.EmailPersonal = empleado.EmailPersonal;
+                existing.Telefono = empleado.Telefono;
+                existing.TelefonoEmergencia = empleado.TelefonoEmergencia;
+                existing.ContactoEmergencia = empleado.ContactoEmergencia;
+                existing.Provincia = empleado.Provincia;
+                existing.Canton = empleado.Canton;
+                existing.Distrito = empleado.Distrito;
+                existing.DireccionExacta = empleado.DireccionExacta;
+                existing.FechaIngreso = empleado.FechaIngreso;
+                existing.FechaSalida = empleado.FechaSalida;
+                existing.TipoContrato = empleado.TipoContrato;
+                existing.PuestoKey = empleado.PuestoKey;
+                existing.DepartamentoKey = empleado.DepartamentoKey;
+                existing.BancoKey = empleado.BancoKey;
+                existing.CuentaBancaria = empleado.CuentaBancaria;
+                existing.Activo = empleado.Activo;
+                existing.Sede = empleado.Sede;
+                existing.SalarioBase = empleado.SalarioBase;
+                existing.SalarioNeto = empleado.SalarioNeto;
+                existing.Rebajos = empleado.Rebajos;
+                existing.CCSS = empleado.CCSS;
+                existing.JUPEMA = empleado.JUPEMA;
+                existing.Magisterio = empleado.Magisterio;
+                existing.PorcentajeBP = empleado.PorcentajeBP;
+                existing.Bonos = empleado.Bonos;
+                existing.FechaModificacion = empleado.FechaModificacion;
+                existing.UsuarioModificacion = empleado.UsuarioModificacion;
+
+                // Marcar las columnas calculadas como no modificadas
+                _context.Entry(existing).Property(e => e.NombreCompleto).IsModified = false;
+                _context.Entry(existing).Property(e => e.Edad).IsModified = false;
+
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -118,7 +190,7 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                 return false;
             }
 
-            // Eliminación lógica
+            // Eliminaciï¿½n lï¿½gica
             empleado.Activo = false;
             empleado.FechaSalida = DateTime.Now;
             empleado.FechaModificacion = DateTime.Now;

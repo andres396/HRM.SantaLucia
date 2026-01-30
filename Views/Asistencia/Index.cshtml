@@ -1,0 +1,96 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.AsistenciaDiariaViewModel
+@{
+    ViewData["Title"] = "Asistencia Diaria";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Asistencia Diaria</h1>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form asp-action="Index" method="get" class="form-inline">
+            <div class="input-group">
+                <input type="date" name="fecha" value="@Model.Fecha.ToString("yyyy-MM-dd")" class="form-control" />
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        <a asp-action="Registrar" asp-route-fecha="@Model.Fecha.ToString("yyyy-MM-dd")" class="btn btn-success">Registrar Asistencia</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Asistencia del @Model.Fecha.ToString("dd/MM/yyyy")</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <span class="badge bg-success">Presentes: @Model.TotalPresentes</span>
+            </div>
+            <div class="col-md-4">
+                <span class="badge bg-warning">Tarde: @Model.TotalTarde</span>
+            </div>
+            <div class="col-md-4">
+                <span class="badge bg-danger">Ausentes: @Model.TotalAusentes</span>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Departamento</th>
+                    <th>Hora Entrada</th>
+                    <th>Hora Salida</th>
+                    <th>Horas Trabajadas</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Asistencias != null && Model.Asistencias.Any())
+                {
+                    @foreach (var item in Model.Asistencias)
+                    {
+                        <tr>
+                            <td>@item.NombreEmpleado</td>
+                            <td>@item.DepartamentoEmpleado</td>
+                            <td>@(item.HoraEntrada?.ToString(@"hh\:mm") ?? "-")</td>
+                            <td>@(item.HoraSalida?.ToString(@"hh\:mm") ?? "-")</td>
+                            <td>@item.HorasTrabajadas.ToString("F2")</td>
+                            <td>
+                                @if (item.Estado == "Presente")
+                                {
+                                    <span class="badge bg-success">@item.Estado</span>
+                                }
+                                else if (item.Estado == "Tarde")
+                                {
+                                    <span class="badge bg-warning">@item.Estado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@item.Estado</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Historial" asp-route-id="@item.EmpleadoKey" class="btn btn-sm btn-info">Historial</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">No hay registros de asistencia para esta fecha</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
