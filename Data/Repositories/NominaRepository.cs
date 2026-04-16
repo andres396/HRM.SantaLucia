@@ -111,8 +111,8 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                         var jupema = empleado.JUPEMA ?? 0;
                         var magisterio = empleado.Magisterio ?? 0;
                         var rebajos = empleado.Rebajos ?? 0;
-                        var porcentajeBP = empleado.PorcentajeBP ?? 0;
-                        var totalDeducciones = ccss + jupema + magisterio + rebajos + (salarioBase * (porcentajeBP / 100m));
+                        var montoBP = empleado.PorcentajeBP ?? 0;
+                        var totalDeducciones = ccss + jupema + magisterio + rebajos + montoBP;
                         var salarioNeto = pagoHorasRegulares + totalExtras - totalDeducciones;
 
                         var nomina = new Nomina

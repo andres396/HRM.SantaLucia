@@ -136,8 +136,8 @@ namespace HRM.SantaLucia.Web.Models.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Magisterio { get; set; }
 
-        [Column(TypeName = "decimal(5,2)")]
-        public decimal? PorcentajeBP { get; set; } // 1% del BP
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? PorcentajeBP { get; set; } // Monto fijo del 1% del BP
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Bonos { get; set; }

@@ -73,7 +73,7 @@ namespace HRM.SantaLucia.Web.Data
                 entity.Property(e => e.Magisterio)
                     .HasColumnType("decimal(18,2)");
                 entity.Property(e => e.PorcentajeBP)
-                    .HasColumnType("decimal(5,2)");
+                    .HasColumnType("decimal(18,2)");
                 entity.Property(e => e.Bonos)
                     .HasColumnType("decimal(18,2)");
             });

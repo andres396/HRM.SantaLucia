@@ -77,8 +77,17 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[DIM].[Empleado]') AND name = 'PorcentajeBP')
 BEGIN
     ALTER TABLE [DIM].[Empleado]
-    ADD [PorcentajeBP] DECIMAL(5,2) NULL
+    ADD [PorcentajeBP] DECIMAL(18,2) NULL
     PRINT 'Campo PorcentajeBP agregado a DIM.Empleado'
+END
+GO
+
+-- Ajustar precisión de PorcentajeBP para manejar montos altos
+IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[DIM].[Empleado]') AND name = 'PorcentajeBP')
+BEGIN
+    ALTER TABLE [DIM].[Empleado]
+    ALTER COLUMN [PorcentajeBP] DECIMAL(18,2) NULL
+    PRINT 'Campo PorcentajeBP ajustado a DECIMAL(18,2) en DIM.Empleado'
 END
 GO
 

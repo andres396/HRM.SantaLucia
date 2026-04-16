@@ -136,8 +136,8 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal? Magisterio { get; set; }
 
-        [Display(Name = "1% del BP")]
-        [DisplayFormat(DataFormatString = "{0:F2}%", ApplyFormatInEditMode = true)]
+        [Display(Name = "Monto BP (1% del BP)")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal? PorcentajeBP { get; set; }
 
         [Display(Name = "Bonos")]
