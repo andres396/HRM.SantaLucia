@@ -102,6 +102,37 @@ namespace HRM.SantaLucia.Web.Models.ViewModels
         public int TotalEmpleados { get; set; }
     }
 
+    public class CalcularAguinaldoViewModel
+    {
+        [Display(Name = "Año")]
+        [Required(ErrorMessage = "El año es requerido")]
+        [Range(2020, 2035, ErrorMessage = "Año inválido")]
+        public int Ano { get; set; }
+
+        [Display(Name = "Sede")]
+        public string? Sede { get; set; }
+
+        public DateTime FechaInicioPeriodo { get; set; }
+        public DateTime FechaFinPeriodo { get; set; }
+        public List<AguinaldoEmpleadoViewModel> Resultados { get; set; } = new();
+        public decimal TotalAguinaldo { get; set; }
+    }
+
+    public class AguinaldoEmpleadoViewModel
+    {
+        public int EmpleadoKey { get; set; }
+        public string NombreEmpleado { get; set; } = string.Empty;
+        public string? Sede { get; set; }
+        public decimal SalarioBase { get; set; }
+        public int MesesTrabajadosPeriodo { get; set; }
+        public int NominasConsideradas { get; set; }
+        public decimal TotalDevengadoPeriodo { get; set; }
+        public decimal PromedioHorasExtraMensual { get; set; }
+        public decimal AguinaldoCalculado { get; set; }
+        public bool SeUsoCalculoAlternativo { get; set; }
+        public string DetalleCalculo { get; set; } = string.Empty;
+    }
+
     public class EditarNominaViewModel
     {
         public int NominaKey { get; set; }

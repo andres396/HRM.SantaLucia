@@ -1,6 +1,8 @@
 @model HRM.SantaLucia.Web.Models.ViewModels.EmpleadoViewModel
 @{
     ViewData["Title"] = "Editar Empleado";
+    var isModal = (ViewBag.IsModal as bool?) ?? false;
+    Layout = isModal ? "~/Views/Shared/_LayoutPopup.cshtml" : "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row">
@@ -13,7 +15,7 @@
 
 <div class="row">
     <div class="col-md-8">
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" asp-route-modal="@isModal" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="EmpleadoKey" />
 
@@ -98,11 +100,67 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-3">
+                        <label asp-for="EmailPersonal" class="control-label"></label>
+                        <input asp-for="EmailPersonal" class="form-control" type="email" />
+                        <span asp-validation-for="EmailPersonal" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
                         <label asp-for="Telefono" class="control-label"></label>
                         <input asp-for="Telefono" class="form-control" />
                         <span asp-validation-for="Telefono" class="text-danger"></span>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="TelefonoEmergencia" class="control-label"></label>
+                        <input asp-for="TelefonoEmergencia" class="form-control" />
+                        <span asp-validation-for="TelefonoEmergencia" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ContactoEmergencia" class="control-label"></label>
+                <input asp-for="ContactoEmergencia" class="form-control" />
+                <span asp-validation-for="ContactoEmergencia" class="text-danger"></span>
+            </div>
+
+            <h5 class="mt-4 mb-3">Dirección</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="Provincia" class="control-label"></label>
+                        <select asp-for="Provincia" class="form-control" asp-items="ViewBag.Provincias">
+                            <option value="">-- Seleccione --</option>
+                        </select>
+                        <span asp-validation-for="Provincia" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="Canton" class="control-label"></label>
+                        <input asp-for="Canton" class="form-control" />
+                        <span asp-validation-for="Canton" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="Distrito" class="control-label"></label>
+                        <input asp-for="Distrito" class="form-control" />
+                        <span asp-validation-for="Distrito" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="DireccionExacta" class="control-label"></label>
+                <textarea asp-for="DireccionExacta" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="DireccionExacta" class="text-danger"></span>
             </div>
 
             <h5 class="mt-4 mb-3">Información Laboral</h5>
@@ -114,6 +172,16 @@
                         <span asp-validation-for="FechaIngreso" class="text-danger"></span>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="FechaSalida" class="control-label"></label>
+                        <input asp-for="FechaSalida" class="form-control" type="date" />
+                        <span asp-validation-for="FechaSalida" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-md-6">
                     <div class="form-group mb-3">
                         <label asp-for="TipoContrato" class="control-label"></label>
@@ -147,6 +215,32 @@
             </div>
 
             <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="BancoKey" class="control-label"></label>
+                        <select asp-for="BancoKey" class="form-control" asp-items="ViewBag.Bancos">
+                            <option value="">-- Seleccione un banco --</option>
+                        </select>
+                        <span asp-validation-for="BancoKey" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="CuentaBancaria" class="control-label"></label>
+                        <input asp-for="CuentaBancaria" class="form-control" />
+                        <span asp-validation-for="CuentaBancaria" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Nacionalidad" class="control-label"></label>
+                        <input asp-for="Nacionalidad" class="form-control" />
+                        <span asp-validation-for="Nacionalidad" class="text-danger"></span>
+                    </div>
+                </div>
                 <div class="col-md-6">
                     <div class="form-group mb-3">
                         <label asp-for="Sede" class="control-label"></label>
@@ -235,7 +329,14 @@
 
             <div class="form-group">
                 <input type="submit" value="Guardar" class="btn btn-primary" />
-                <a asp-action="Details" asp-route-id="@Model.EmpleadoKey" class="btn btn-secondary">Cancelar</a>
+                @if (isModal)
+                {
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalEditarEmpleado()">Cerrar</button>
+                }
+                else
+                {
+                    <a asp-action="Details" asp-route-id="@Model.EmpleadoKey" class="btn btn-secondary">Cancelar</a>
+                }
             </div>
         </form>
     </div>
@@ -243,5 +344,19 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @if (isModal)
+    {
+        <script>
+            function cerrarModalEditarEmpleado() {
+                try {
+                    var el = window.parent.document.getElementById('editarEmpleadoModal');
+                    if (el && window.parent.bootstrap) {
+                        var inst = window.parent.bootstrap.Modal.getInstance(el);
+                        if (inst) inst.hide();
+                    }
+                } catch (e) { /* noop */ }
+            }
+        </script>
+    }
 }
 

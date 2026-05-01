@@ -1,23 +1,18 @@
-using Dapper;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 using HRM.SantaLucia.Web.Data;
 using HRM.SantaLucia.Web.Models.Entities;
+using HRM.SantaLucia.Web.Models.ViewModels;
+using HRM.SantaLucia.Web.Helpers;
 
 namespace HRM.SantaLucia.Web.Data.Repositories
 {
     public class NominaRepository : INominaRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly string _connectionString;
 
-        public NominaRepository(ApplicationDbContext context, IConfiguration configuration)
+        public NominaRepository(ApplicationDbContext context)
         {
             _context = context;
-            // Usar la cadena de conexión directamente sin modificaciones
-            // El DbContext ya tiene la cadena configurada correctamente
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         public async Task<IEnumerable<Nomina>> GetByPeriodoAsync(int ano, int mes, int quincena, string? sede)
@@ -28,6 +23,7 @@ namespace HRM.SantaLucia.Web.Data.Repositories
 
             var query = _context.Nominas
                 .Include(n => n.Empleado)
+                    .ThenInclude(e => e.Banco)
                 .Include(n => n.Puesto)
                 .Include(n => n.Departamento)
                 .Where(n => n.PeriodoKey == periodoKey);
@@ -90,31 +86,6 @@ namespace HRM.SantaLucia.Web.Data.Repositories
 
                     if (existing == null)
                     {
-                        var salarioBase = empleado.SalarioBase ?? empleado.Puesto?.SalarioMinimo ?? 0;
-                        var qtyHorasRegulares = 80m; // 80 horas por quincena (default)
-                        var qtyHorasExtras = 0m;
-                        var qtyDiasFeriados = 0m;
-
-                        // Fórmulas: SalarioBrutoDiario = SalarioBase/30, HoraRegular = SalarioBrutoDiario/8 = SalarioBase/240
-                        var salarioBrutoDiario = salarioBase / 30m;
-                        var horaRegular = salarioBrutoDiario / 8m;
-                        var pagoHorasRegulares = horaRegular * qtyHorasRegulares;
-                        var pagoHorasExtra = horaRegular * 1.5m * qtyHorasExtras;
-                        var feriadosMonto = salarioBrutoDiario * 2m * qtyDiasFeriados;
-
-                        var bonificaciones = empleado.Bonos ?? 0;
-                        // Aguinaldo automático: solo en diciembre = 1/12 del salario
-                        var aguinaldo = (mes == 12) ? (salarioBase / 12m) : 0m;
-                        var totalExtras = pagoHorasExtra + feriadosMonto + bonificaciones + aguinaldo;
-
-                        var ccss = empleado.CCSS ?? 0;
-                        var jupema = empleado.JUPEMA ?? 0;
-                        var magisterio = empleado.Magisterio ?? 0;
-                        var rebajos = empleado.Rebajos ?? 0;
-                        var montoBP = empleado.PorcentajeBP ?? 0;
-                        var totalDeducciones = ccss + jupema + magisterio + rebajos + montoBP;
-                        var salarioNeto = pagoHorasRegulares + totalExtras - totalDeducciones;
-
                         var nomina = new Nomina
                         {
                             EmpleadoKey = empleado.EmpleadoKey,
@@ -122,32 +93,23 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                             DepartamentoKey = empleado.DepartamentoKey.Value,
                             PeriodoKey = periodoKey,
                             Sede = sede,
-                            SalarioBase = salarioBase,
-                            HorasTrabajadas = qtyHorasRegulares,
-                            HorasExtra = qtyHorasExtras,
-                            PagoHorasRegulares = pagoHorasRegulares,
-                            PagoHorasExtra = pagoHorasExtra,
-                            Bonificaciones = bonificaciones,
-                            Comisiones = 0,
-                            TotalExtras = totalExtras,
-                            SeguroSocial = ccss,
-                            Renta = 0,
-                            OtrasDeducciones = jupema + magisterio + rebajos,
-                            TotalDeducciones = totalDeducciones,
-                            SalarioNeto = salarioNeto,
-                            Miscelaneo = 0,
-                            QTYDiasFeriados = qtyDiasFeriados,
-                            Feriados = feriadosMonto,
-                            Aguinaldo = aguinaldo,
-                            ExtrasQuincenales = 0,
-                            DeduccionesQuincenales = 0,
-                            QTYHorasRegulares = qtyHorasRegulares,
-                            QTYHorasExtras = qtyHorasExtras,
+                            QTYHorasRegulares = 80m,
+                            QTYHorasExtras = 0m,
+                            QTYDiasFeriados = 0m,
+                            ExtrasQuincenales = 0m,
+                            DeduccionesQuincenales = 0m,
                             FechaCreacion = DateTime.Now,
                             UsuarioCreacion = usuarioCreacion
                         };
 
+                        AplicarFormulaQuincenal(nomina, empleado, sincronizarMiscelaneoConBonos: true);
                         _context.Nominas.Add(nomina);
+                    }
+                    else
+                    {
+                        AplicarFormulaQuincenal(existing, empleado, sincronizarMiscelaneoConBonos: false);
+                        existing.FechaModificacion = DateTime.Now;
+                        existing.UsuarioModificacion = usuarioCreacion;
                     }
                 }
 
@@ -168,6 +130,15 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                 if (existing == null)
                     return false;
 
+                var empleado = await _context.Empleados
+                    .Include(e => e.Puesto)
+                    .FirstOrDefaultAsync(e => e.EmpleadoKey == existing.EmpleadoKey);
+
+                if (empleado == null)
+                {
+                    return false;
+                }
+
                 // Actualizar campos editables
                 existing.QTYHorasExtras = nomina.QTYHorasExtras;
                 existing.QTYHorasRegulares = nomina.QTYHorasRegulares;
@@ -175,22 +146,7 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                 existing.Miscelaneo = nomina.Miscelaneo;
                 existing.ExtrasQuincenales = nomina.ExtrasQuincenales;
                 existing.DeduccionesQuincenales = nomina.DeduccionesQuincenales;
-
-                // Aguinaldo automático: en diciembre = 1 mes de salario (SalarioBase/12), resto del año = 0
-                var mes = (existing.PeriodoKey / 100) % 100;
-                existing.Aguinaldo = (mes == 12) ? (existing.SalarioBase / 12m) : 0m;
-
-                // Fórmulas: HoraRegular = SalarioBase/240, PagoHorasExtra = HoraRegular*1.5*QTYHorasExtras, Feriados = SalarioBrutoDiario*2*QTYDiasFeriados
-                var salarioBrutoDiario = existing.SalarioBase / 30m;
-                var horaRegular = salarioBrutoDiario / 8m;
-                existing.PagoHorasRegulares = horaRegular * existing.QTYHorasRegulares;
-                existing.PagoHorasExtra = horaRegular * 1.5m * existing.QTYHorasExtras;
-                existing.Feriados = salarioBrutoDiario * 2m * existing.QTYDiasFeriados;
-                existing.HorasExtra = existing.QTYHorasExtras;
-
-                existing.TotalExtras = existing.PagoHorasExtra + existing.Feriados + existing.Bonificaciones + existing.Comisiones + existing.Miscelaneo + existing.Aguinaldo + existing.ExtrasQuincenales;
-                existing.TotalDeducciones = existing.SeguroSocial + existing.Renta + existing.OtrasDeducciones + existing.DeduccionesQuincenales;
-                existing.SalarioNeto = existing.PagoHorasRegulares + existing.TotalExtras - existing.TotalDeducciones;
+                AplicarFormulaQuincenal(existing, empleado, sincronizarMiscelaneoConBonos: false);
 
                 existing.FechaModificacion = DateTime.Now;
                 existing.UsuarioModificacion = "SYSTEM";
@@ -202,6 +158,52 @@ namespace HRM.SantaLucia.Web.Data.Repositories
             {
                 return false;
             }
+        }
+
+        private static void AplicarFormulaQuincenal(Nomina nomina, Empleado empleado, bool sincronizarMiscelaneoConBonos)
+        {
+            var salarioBase = empleado.SalarioBase ?? empleado.Puesto?.SalarioMinimo ?? 0m;
+            var horaRegular = NominaPlanillaCalculo.ValorHoraRegular(salarioBase);
+
+            nomina.SalarioBase = salarioBase;
+            nomina.Sede = empleado.Sede;
+            nomina.PuestoKey = empleado.PuestoKey ?? nomina.PuestoKey;
+            nomina.DepartamentoKey = empleado.DepartamentoKey ?? nomina.DepartamentoKey;
+            nomina.HorasTrabajadas = nomina.QTYHorasRegulares;
+            nomina.HorasExtra = nomina.QTYHorasExtras;
+            nomina.PagoHorasRegulares = decimal.Round(horaRegular * nomina.QTYHorasRegulares, 2, MidpointRounding.AwayFromZero);
+            nomina.PagoHorasExtra = NominaPlanillaCalculo.PagoHorasExtras(salarioBase, nomina.QTYHorasExtras);
+            nomina.Feriados = NominaPlanillaCalculo.MontoFeriados(salarioBase, nomina.QTYDiasFeriados);
+
+            nomina.Bonificaciones = decimal.Round(empleado.Bonos ?? 0m, 2, MidpointRounding.AwayFromZero);
+            if (sincronizarMiscelaneoConBonos)
+            {
+                nomina.Miscelaneo = nomina.Bonificaciones;
+            }
+            else
+            {
+                nomina.Miscelaneo = decimal.Round(nomina.Miscelaneo, 2, MidpointRounding.AwayFromZero);
+            }
+
+            nomina.Comisiones = 0m;
+            nomina.Aguinaldo = 0m;
+
+            var ccss = decimal.Round(empleado.CCSS ?? 0m, 2, MidpointRounding.AwayFromZero);
+            var jupema = decimal.Round(empleado.JUPEMA ?? 0m, 2, MidpointRounding.AwayFromZero);
+            var magisterio = decimal.Round(empleado.Magisterio ?? 0m, 2, MidpointRounding.AwayFromZero);
+            var rebajos = decimal.Round(empleado.Rebajos ?? 0m, 2, MidpointRounding.AwayFromZero);
+            var porcentajeBp = decimal.Round(empleado.PorcentajeBP ?? 0m, 2, MidpointRounding.AwayFromZero);
+
+            nomina.SeguroSocial = ccss;
+            nomina.Renta = 0m;
+            nomina.OtrasDeducciones = jupema + magisterio + rebajos + porcentajeBp;
+            nomina.OtrasDeducciones = decimal.Round(nomina.OtrasDeducciones, 2, MidpointRounding.AwayFromZero);
+            nomina.ExtrasQuincenales = decimal.Round(nomina.ExtrasQuincenales, 2, MidpointRounding.AwayFromZero);
+            nomina.DeduccionesQuincenales = decimal.Round(nomina.DeduccionesQuincenales, 2, MidpointRounding.AwayFromZero);
+
+            nomina.TotalExtras = NominaPlanillaCalculo.Credito(nomina);
+            nomina.TotalDeducciones = NominaPlanillaCalculo.Debito(nomina);
+            nomina.SalarioNeto = NominaPlanillaCalculo.SalarioNeto(salarioBase, nomina);
         }
 
         public async Task<decimal> GetTotalNominaAsync(int ano, int mes, int quincena, string? sede)
@@ -228,6 +230,106 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                 .OrderByDescending(n => n.PeriodoKey)
                 .Take(top)
                 .ToListAsync();
+        }
+
+        public async Task<List<AguinaldoEmpleadoViewModel>> CalcularAguinaldoAsync(int ano, string? sede)
+        {
+            var fechaInicio = new DateTime(ano - 1, 12, 1);
+            var fechaFin = new DateTime(ano, 11, DateTime.DaysInMonth(ano, 11));
+            var periodoInicioKey = fechaInicio.Year * 10000 + fechaInicio.Month * 100 + 1;
+            var periodoFinKey = fechaFin.Year * 10000 + fechaFin.Month * 100 + fechaFin.Day;
+
+            var empleadosQuery = _context.Empleados
+                .Where(e => e.Activo || (e.FechaSalida.HasValue && e.FechaSalida.Value >= fechaInicio));
+
+            if (!string.IsNullOrWhiteSpace(sede))
+            {
+                empleadosQuery = empleadosQuery.Where(e => e.Sede == sede);
+            }
+
+            var empleados = await empleadosQuery
+                .OrderBy(e => e.NombreCompleto)
+                .ToListAsync();
+
+            var resultados = new List<AguinaldoEmpleadoViewModel>();
+
+            foreach (var empleado in empleados)
+            {
+                var nominasPeriodo = await _context.Nominas
+                    .Where(n => n.EmpleadoKey == empleado.EmpleadoKey
+                        && n.PeriodoKey >= periodoInicioKey
+                        && n.PeriodoKey <= periodoFinKey)
+                    .ToListAsync();
+
+                decimal aguinaldoCalculado;
+                decimal totalDevengadoPeriodo;
+                int mesesTrabajados;
+                decimal promedioHorasExtraMensual = 0m;
+                bool usoCalculoAlternativo = false;
+                string detalleCalculo;
+
+                if (nominasPeriodo.Any())
+                {
+                    totalDevengadoPeriodo = nominasPeriodo.Sum(n =>
+                        NominaPlanillaCalculo.SalarioQuincenal(n.SalarioBase) + NominaPlanillaCalculo.Credito(n));
+
+                    aguinaldoCalculado = totalDevengadoPeriodo / 12m;
+                    // PeriodoKey = yyyyMMdd → clave única por mes calendario (año*100 + mes)
+                    mesesTrabajados = nominasPeriodo
+                        .Select(n => (n.PeriodoKey / 10000) * 100 + (n.PeriodoKey / 100) % 100)
+                        .Distinct()
+                        .Count();
+
+                    detalleCalculo = "Cálculo estándar (01 dic - 30 nov) con nóminas del período.";
+                }
+                else
+                {
+                    usoCalculoAlternativo = true;
+                    var fechaIngresoAjustada = empleado.FechaIngreso > fechaInicio ? empleado.FechaIngreso : fechaInicio;
+                    var fechaSalidaAjustada = empleado.FechaSalida.HasValue && empleado.FechaSalida.Value < fechaFin
+                        ? empleado.FechaSalida.Value
+                        : fechaFin;
+
+                    if (fechaIngresoAjustada > fechaSalidaAjustada)
+                    {
+                        continue;
+                    }
+
+                    mesesTrabajados = ((fechaSalidaAjustada.Year - fechaIngresoAjustada.Year) * 12) + fechaSalidaAjustada.Month - fechaIngresoAjustada.Month + 1;
+
+                    var historialNomina = await _context.Nominas
+                        .Where(n => n.EmpleadoKey == empleado.EmpleadoKey)
+                        .ToListAsync();
+
+                    promedioHorasExtraMensual = historialNomina.Any()
+                        ? historialNomina.Average(n => n.PagoHorasExtra)
+                        : 0m;
+
+                    var salarioBrutoMensual = empleado.SalarioBase ?? 0m;
+                    var baseMensualConExtras = salarioBrutoMensual + promedioHorasExtraMensual;
+                    totalDevengadoPeriodo = baseMensualConExtras * mesesTrabajados;
+                    aguinaldoCalculado = totalDevengadoPeriodo / 12m;
+
+                    detalleCalculo = "Cálculo alternativo por meses trabajados y nóminas ingresadas (salario bruto mensual + promedio de horas extra).";
+                }
+
+                resultados.Add(new AguinaldoEmpleadoViewModel
+                {
+                    EmpleadoKey = empleado.EmpleadoKey,
+                    NombreEmpleado = empleado.NombreCompleto ?? $"{empleado.Nombre} {empleado.Apellido1}".Trim(),
+                    Sede = empleado.Sede,
+                    SalarioBase = empleado.SalarioBase ?? 0m,
+                    MesesTrabajadosPeriodo = mesesTrabajados,
+                    NominasConsideradas = nominasPeriodo.Count,
+                    TotalDevengadoPeriodo = totalDevengadoPeriodo,
+                    PromedioHorasExtraMensual = promedioHorasExtraMensual,
+                    AguinaldoCalculado = Math.Round(aguinaldoCalculado, 2),
+                    SeUsoCalculoAlternativo = usoCalculoAlternativo,
+                    DetalleCalculo = detalleCalculo
+                });
+            }
+
+            return resultados;
         }
     }
 }

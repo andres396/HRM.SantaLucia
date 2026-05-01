@@ -53,6 +53,8 @@ namespace HRM.SantaLucia.Web.Models.Entities
         [DataType(DataType.Date)]
         public DateTime FechaNacimiento { get; set; }
 
+        /// <summary>No persistida: la columna en BD puede ser texto o estar ausente; se expone vía AutoMapper desde <see cref="FechaNacimiento"/>.</summary>
+        [NotMapped]
         public int? Edad { get; set; }
 
         [Required]

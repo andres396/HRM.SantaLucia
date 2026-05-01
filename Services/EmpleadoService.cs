@@ -40,8 +40,7 @@ namespace HRM.SantaLucia.Web.Services
             
             // Asegurar que las propiedades calculadas sean null (se calcularán en la BD)
             empleado.NombreCompleto = null;
-            empleado.Edad = null;
-            
+
             // Establecer valores de auditoría
             empleado.UsuarioCreacion = usuarioCreacion;
             empleado.FechaCreacion = DateTime.Now;
@@ -119,6 +118,18 @@ namespace HRM.SantaLucia.Web.Services
         public async Task<bool> ValidarEmailUnicoAsync(string email, int? excludeId = null)
         {
             return !await _repository.ExistsEmailAsync(email, excludeId);
+        }
+
+        public async Task<EmpleadoViewModel?> GetByCedulaAsync(string cedula)
+        {
+            var empleado = await _repository.GetByCedulaAsync(cedula);
+            return empleado == null ? null : _mapper.Map<EmpleadoViewModel>(empleado);
+        }
+
+        public async Task<EmpleadoViewModel?> GetByEmpleadoIdAsync(string empleadoId)
+        {
+            var empleado = await _repository.GetByEmpleadoIDAsync(empleadoId);
+            return empleado == null ? null : _mapper.Map<EmpleadoViewModel>(empleado);
         }
     }
 }

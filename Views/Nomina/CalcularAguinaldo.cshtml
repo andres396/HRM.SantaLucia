@@ -1,0 +1,90 @@
+@model HRM.SantaLucia.Web.Models.ViewModels.CalcularAguinaldoViewModel
+@{
+    ViewData["Title"] = "Calcular Aguinaldo";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Calcular Aguinaldo</h1>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="CalcularAguinaldo" method="post" class="row g-3">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="col-md-3">
+                <label asp-for="Ano" class="form-label"></label>
+                <input asp-for="Ano" class="form-control" min="2020" max="2035" />
+                <span asp-validation-for="Ano" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Sede" class="form-label"></label>
+                <select asp-for="Sede" class="form-control">
+                    <option value="">Todas</option>
+                    <option value="Kamakiri">Kamakiri</option>
+                    <option value="Complejo Educativo">Complejo Educativo</option>
+                </select>
+            </div>
+
+            <div class="col-md-5 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Calcular</button>
+                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Resultados != null && Model.Resultados.Any())
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Período:</strong> @Model.FechaInicioPeriodo.ToString("dd/MM/yyyy") - @Model.FechaFinPeriodo.ToString("dd/MM/yyyy")
+                </div>
+                <div class="col-md-6 text-end">
+                    <strong>Total Aguinaldo:</strong> <span class="h5 text-success">@Model.TotalAguinaldo.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Sede</th>
+                        <th>Meses</th>
+                        <th>Nóminas</th>
+                        <th>Total Devengado</th>
+                        <th>Aguinaldo</th>
+                        <th>Observación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Resultados.OrderBy(r => r.NombreEmpleado))
+                    {
+                        <tr>
+                            <td>@item.NombreEmpleado</td>
+                            <td>@item.Sede</td>
+                            <td>@item.MesesTrabajadosPeriodo</td>
+                            <td>@item.NominasConsideradas</td>
+                            <td>@item.TotalDevengadoPeriodo.ToString("C")</td>
+                            <td><strong>@item.AguinaldoCalculado.ToString("C")</strong></td>
+                            <td>@item.DetalleCalculo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

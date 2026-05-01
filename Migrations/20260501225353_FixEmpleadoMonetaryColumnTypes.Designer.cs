@@ -4,6 +4,7 @@ using HRM.SantaLucia.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRM.SantaLucia.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501225353_FixEmpleadoMonetaryColumnTypes")]
+    partial class FixEmpleadoMonetaryColumnTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -237,6 +240,11 @@ namespace HRM.SantaLucia.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("Edad")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("int")
+                        .HasComputedColumnSql("(DATEDIFF(YEAR, [FechaNacimiento], GETDATE()) - CASE WHEN DATEADD(YEAR, DATEDIFF(YEAR, [FechaNacimiento], GETDATE()), [FechaNacimiento]) > GETDATE() THEN 1 ELSE 0 END)", true);
 
                     b.Property<string>("Email")
                         .IsRequired()

@@ -11,8 +11,10 @@ builder.Services.AddControllersWithViews();
 // Configurar DbContext con retry logic para errores transitorios
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException(
+            "No se encontró la cadena de conexión 'DefaultConnection'. Revise appsettings.json.");
+
     options.UseSqlServer(
         connectionString,
         sqlServerOptions => sqlServerOptions.EnableRetryOnFailure(
@@ -38,7 +40,7 @@ builder.Services.AddScoped<IAsistenciaService, AsistenciaService>();
 builder.Services.AddScoped<IVacacionesService, VacacionesService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-// Configurar sesi�n
+// Configurar sesión
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

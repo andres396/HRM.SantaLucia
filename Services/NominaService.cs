@@ -1,9 +1,10 @@
 using AutoMapper;
 using HRM.SantaLucia.Web.Data.Repositories;
+using HRM.SantaLucia.Web.Helpers;
 using HRM.SantaLucia.Web.Models.ViewModels;
 using HRM.SantaLucia.Web.Models.Entities;
 using OfficeOpenXml;
-using System.Text;
+using System.Globalization;
 
 namespace HRM.SantaLucia.Web.Services
 {
@@ -93,85 +94,104 @@ namespace HRM.SantaLucia.Web.Services
 
         public async Task<byte[]> ExportarNominaExcelAsync(int ano, int mes, int quincena, string? sede)
         {
+            const int colCount = 10;
             var nominas = await _repository.GetByPeriodoAsync(ano, mes, quincena, sede);
-            var nombreMes = new DateTime(ano, mes, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+            var nombreMes = new DateTime(ano, mes, 1).ToString("MMMM", new CultureInfo("es-ES"));
             var quincenaTexto = quincena == 1 ? "Primera" : "Segunda";
             var sedeTexto = sede ?? "Todas";
+            var rangoQuincena = FormatearRangoQuincena(ano, mes, quincena);
 
             using var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Nómina");
 
-            // Encabezado
             worksheet.Cells[1, 1].Value = $"Nómina {quincenaTexto} Quincena - {nombreMes} {ano}";
-            worksheet.Cells[1, 1, 1, 22].Merge = true;
+            worksheet.Cells[1, 1, 1, colCount].Merge = true;
             worksheet.Cells[1, 1].Style.Font.Bold = true;
             worksheet.Cells[1, 1].Style.Font.Size = 14;
 
             worksheet.Cells[2, 1].Value = $"Sede: {sedeTexto}";
-            worksheet.Cells[2, 1, 2, 22].Merge = true;
+            worksheet.Cells[2, 1, 2, colCount].Merge = true;
 
-            // Encabezados de columnas (todos los campos de nómina)
             var headers = new[]
             {
-                "Empleado", "Sede", "Salario Base", "QTY Horas Regulares", "Pago Horas Regulares", "QTY Horas Extras", "Pago Horas Extras",
-                "QTY Días Feriados", "Feriados (monto)", "Bonificaciones", "Comisiones", "Misceláneo", "Aguinaldo", "Extras Quincenales",
-                "Total Extras", "Seguro Social", "Renta", "Otras Deducciones", "Deducciones Quincenales", "Total Deducciones", "Salario Neto"
+                "Quincena (fechas)",
+                "Empleado",
+                "Código Empleado",
+                "Banco",
+                "Cuenta Bancaria",
+                "Salario Bruto Mensual",
+                "Salario Bruto Quincenal",
+                "Créditos",
+                "Débitos",
+                "Total a pagar"
             };
+
             for (int c = 0; c < headers.Length; c++)
             {
                 worksheet.Cells[4, c + 1].Value = headers[c];
             }
-            worksheet.Cells[4, 1, 4, headers.Length].Style.Font.Bold = true;
-            worksheet.Cells[4, 1, 4, headers.Length].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            worksheet.Cells[4, 1, 4, headers.Length].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
 
-            // Datos
+            worksheet.Cells[4, 1, 4, colCount].Style.Font.Bold = true;
+            worksheet.Cells[4, 1, 4, colCount].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            worksheet.Cells[4, 1, 4, colCount].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+
+            var lista = nominas.OrderBy(n => n.Empleado?.NombreCompleto ?? "").ToList();
             int row = 5;
-            foreach (var nomina in nominas.OrderBy(n => n.Empleado.NombreCompleto))
+            foreach (var nomina in lista)
             {
-                worksheet.Cells[row, 1].Value = nomina.Empleado?.NombreCompleto ?? "";
-                worksheet.Cells[row, 2].Value = nomina.Sede ?? "";
-                worksheet.Cells[row, 3].Value = nomina.SalarioBase;
-                worksheet.Cells[row, 4].Value = nomina.QTYHorasRegulares;
-                worksheet.Cells[row, 5].Value = nomina.PagoHorasRegulares;
-                worksheet.Cells[row, 6].Value = nomina.QTYHorasExtras;
-                worksheet.Cells[row, 7].Value = nomina.PagoHorasExtra;
-                worksheet.Cells[row, 8].Value = nomina.QTYDiasFeriados;
-                worksheet.Cells[row, 9].Value = nomina.Feriados;
-                worksheet.Cells[row, 10].Value = nomina.Bonificaciones;
-                worksheet.Cells[row, 11].Value = nomina.Comisiones;
-                worksheet.Cells[row, 12].Value = nomina.Miscelaneo;
-                worksheet.Cells[row, 13].Value = nomina.Aguinaldo;
-                worksheet.Cells[row, 14].Value = nomina.ExtrasQuincenales;
-                worksheet.Cells[row, 15].Value = nomina.TotalExtras;
-                worksheet.Cells[row, 16].Value = nomina.SeguroSocial;
-                worksheet.Cells[row, 17].Value = nomina.Renta;
-                worksheet.Cells[row, 18].Value = nomina.OtrasDeducciones;
-                worksheet.Cells[row, 19].Value = nomina.DeduccionesQuincenales;
-                worksheet.Cells[row, 20].Value = nomina.TotalDeducciones;
-                worksheet.Cells[row, 21].Value = nomina.SalarioNeto;
-                for (int col = 3; col <= 21; col++)
+                var emp = nomina.Empleado;
+                var salarioQuincenal = NominaPlanillaCalculo.SalarioQuincenal(nomina.SalarioBase);
+                var credito = NominaPlanillaCalculo.Credito(nomina);
+                var debito = NominaPlanillaCalculo.Debito(nomina);
+
+                worksheet.Cells[row, 1].Value = rangoQuincena;
+                worksheet.Cells[row, 2].Value = emp?.NombreCompleto ?? "";
+                worksheet.Cells[row, 3].Value = emp?.EmpleadoID ?? "";
+                worksheet.Cells[row, 4].Value = emp?.Banco?.NombreBanco ?? "";
+                worksheet.Cells[row, 5].Value = emp?.CuentaBancaria ?? "";
+                worksheet.Cells[row, 6].Value = nomina.SalarioBase;
+                worksheet.Cells[row, 7].Value = salarioQuincenal;
+                worksheet.Cells[row, 8].Value = credito;
+                worksheet.Cells[row, 9].Value = debito;
+                worksheet.Cells[row, 10].Value = nomina.SalarioNeto;
+
+                for (int col = 6; col <= colCount; col++)
                 {
                     worksheet.Cells[row, col].Style.Numberformat.Format = "#,##0.00";
                 }
+
                 row++;
             }
 
-            // Total
             worksheet.Cells[row, 1].Value = "TOTAL";
             worksheet.Cells[row, 1].Style.Font.Bold = true;
-            worksheet.Cells[row, 15].Value = nominas.Sum(n => n.TotalExtras);
-            worksheet.Cells[row, 20].Value = nominas.Sum(n => n.TotalDeducciones);
-            worksheet.Cells[row, 21].Value = nominas.Sum(n => n.SalarioNeto);
-            worksheet.Cells[row, 15].Style.Numberformat.Format = "#,##0.00";
-            worksheet.Cells[row, 20].Style.Numberformat.Format = "#,##0.00";
-            worksheet.Cells[row, 21].Style.Numberformat.Format = "#,##0.00";
-            worksheet.Cells[row, 15, row, 21].Style.Font.Bold = true;
+            worksheet.Cells[row, 6].Value = lista.Sum(n => n.SalarioBase);
+            worksheet.Cells[row, 7].Value = lista.Sum(n => NominaPlanillaCalculo.SalarioQuincenal(n.SalarioBase));
+            worksheet.Cells[row, 8].Value = lista.Sum(n => NominaPlanillaCalculo.Credito(n));
+            worksheet.Cells[row, 9].Value = lista.Sum(n => NominaPlanillaCalculo.Debito(n));
+            worksheet.Cells[row, 10].Value = lista.Sum(n => n.SalarioNeto);
+            foreach (var c in new[] { 6, 7, 8, 9, 10 })
+            {
+                worksheet.Cells[row, c].Style.Numberformat.Format = "#,##0.00";
+                worksheet.Cells[row, c].Style.Font.Bold = true;
+            }
 
-            // Ajustar ancho de columnas
             worksheet.Cells.AutoFitColumns();
-
             return package.GetAsByteArray();
+        }
+
+        private static string FormatearRangoQuincena(int ano, int mes, int quincena)
+        {
+            if (quincena == 1)
+            {
+                var ini = new DateTime(ano, mes, 1);
+                var fin = new DateTime(ano, mes, 15);
+                return $"{ini:dd/MM/yyyy} - {fin:dd/MM/yyyy}";
+            }
+
+            var ini2 = new DateTime(ano, mes, 16);
+            var fin2 = new DateTime(ano, mes, DateTime.DaysInMonth(ano, mes));
+            return $"{ini2:dd/MM/yyyy} - {fin2:dd/MM/yyyy}";
         }
 
         public async Task<IEnumerable<NominaViewModel>> GetHistorialEmpleadoAsync(int empleadoKey, int top = 12)
@@ -199,6 +219,23 @@ namespace HRM.SantaLucia.Web.Services
         public async Task<decimal> GetTotalNominaAsync(int ano, int mes, int quincena, string? sede)
         {
             return await _repository.GetTotalNominaAsync(ano, mes, quincena, sede);
+        }
+
+        public async Task<CalcularAguinaldoViewModel> CalcularAguinaldoAsync(int ano, string? sede)
+        {
+            var fechaInicio = new DateTime(ano - 1, 12, 1);
+            var fechaFin = new DateTime(ano, 11, DateTime.DaysInMonth(ano, 11));
+            var resultados = await _repository.CalcularAguinaldoAsync(ano, sede);
+
+            return new CalcularAguinaldoViewModel
+            {
+                Ano = ano,
+                Sede = sede,
+                FechaInicioPeriodo = fechaInicio,
+                FechaFinPeriodo = fechaFin,
+                Resultados = resultados,
+                TotalAguinaldo = resultados.Sum(r => r.AguinaldoCalculado)
+            };
         }
     }
 }

@@ -72,6 +72,20 @@ namespace HRM.SantaLucia.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existentePorCedula = await _empleadoService.GetByCedulaAsync(model.Cedula);
+                if (existentePorCedula != null)
+                {
+                    TempData["ErrorMessage"] = "La cédula ya existe. Se abrió el registro existente en modo edición para que actualices los datos.";
+                    return RedirectToAction(nameof(Edit), new { id = existentePorCedula.EmpleadoKey });
+                }
+
+                var existentePorEmpleadoId = await _empleadoService.GetByEmpleadoIdAsync(model.EmpleadoID);
+                if (existentePorEmpleadoId != null)
+                {
+                    TempData["ErrorMessage"] = "El código de empleado ya existe. Se abrió el registro existente en modo edición para que actualices los datos.";
+                    return RedirectToAction(nameof(Edit), new { id = existentePorEmpleadoId.EmpleadoKey });
+                }
+
                 // Validar c�dula �nica
                 if (!await _empleadoService.ValidarCedulaUnicaAsync(model.Cedula))
                 {
@@ -105,7 +119,7 @@ namespace HRM.SantaLucia.Web.Controllers
         }
 
         // GET: Empleado/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, bool modal = false)
         {
             var empleado = await _empleadoService.GetByIdAsync(id);
             if (empleado == null)
@@ -113,6 +127,7 @@ namespace HRM.SantaLucia.Web.Controllers
                 return NotFound();
             }
 
+            ViewBag.IsModal = modal;
             LoadViewData();
             return View(empleado);
         }
@@ -120,9 +135,9 @@ namespace HRM.SantaLucia.Web.Controllers
         // POST: Empleado/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EmpleadoViewModel model)
+        public async Task<IActionResult> Edit(EmpleadoViewModel model, bool modal = false)
         {
-            if (id != model.EmpleadoKey)
+            if (model.EmpleadoKey <= 0)
             {
                 return NotFound();
             }
@@ -130,7 +145,7 @@ namespace HRM.SantaLucia.Web.Controllers
             if (ModelState.IsValid)
             {
                 // Validar c�dula �nica (excluyendo el empleado actual)
-                if (!await _empleadoService.ValidarCedulaUnicaAsync(model.Cedula, id))
+                if (!await _empleadoService.ValidarCedulaUnicaAsync(model.Cedula, model.EmpleadoKey))
                 {
                     ModelState.AddModelError("Cedula", "Ya existe un empleado con esta c�dula");
                     LoadViewData();
@@ -138,7 +153,7 @@ namespace HRM.SantaLucia.Web.Controllers
                 }
 
                 // Validar email �nico (excluyendo el empleado actual)
-                if (!await _empleadoService.ValidarEmailUnicoAsync(model.Email, id))
+                if (!await _empleadoService.ValidarEmailUnicoAsync(model.Email, model.EmpleadoKey))
                 {
                     ModelState.AddModelError("Email", "Ya existe un empleado con este correo electr�nico");
                     LoadViewData();
@@ -151,7 +166,11 @@ namespace HRM.SantaLucia.Web.Controllers
                     if (success)
                     {
                         TempData["SuccessMessage"] = "Empleado actualizado exitosamente";
-                        return RedirectToAction(nameof(Details), new { id });
+                        if (modal)
+                        {
+                            return Content("<script>window.parent.location.reload();</script>", "text/html");
+                        }
+                        return RedirectToAction(nameof(Details), new { id = model.EmpleadoKey });
                     }
                     else
                     {

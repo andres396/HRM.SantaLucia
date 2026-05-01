@@ -64,6 +64,20 @@
     </div>
 </div>
 
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Calcular Aguinaldo</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Calcula aguinaldo según estándar CR (del 01 de diciembre del año anterior al 30 de noviembre del año actual).</p>
+                <a asp-action="CalcularAguinaldo" class="btn btn-outline-primary">Ir a Calcular Aguinaldo</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

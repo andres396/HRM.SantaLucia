@@ -26,6 +26,30 @@ namespace HRM.SantaLucia.Web.Controllers
             return View(model);
         }
 
+        // GET: Nomina/CalcularAguinaldo
+        public IActionResult CalcularAguinaldo()
+        {
+            var model = new CalcularAguinaldoViewModel
+            {
+                Ano = DateTime.Now.Year
+            };
+            return View(model);
+        }
+
+        // POST: Nomina/CalcularAguinaldo
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CalcularAguinaldo(CalcularAguinaldoViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var resultado = await _nominaService.CalcularAguinaldoAsync(model.Ano, model.Sede);
+            return View(resultado);
+        }
+
         // POST: Nomina/Calcular
         [HttpPost]
         [ValidateAntiForgeryToken]

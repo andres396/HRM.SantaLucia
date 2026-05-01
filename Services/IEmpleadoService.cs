@@ -14,5 +14,7 @@ namespace HRM.SantaLucia.Web.Services
         Task<IEnumerable<EmpleadoViewModel>> SearchAsync(string searchTerm, int? departamentoKey = null, bool soloActivos = true);
         Task<bool> ValidarCedulaUnicaAsync(string cedula, int? excludeId = null);
         Task<bool> ValidarEmailUnicoAsync(string email, int? excludeId = null);
+        Task<EmpleadoViewModel?> GetByCedulaAsync(string cedula);
+        Task<EmpleadoViewModel?> GetByEmpleadoIdAsync(string empleadoId);
     }
 }

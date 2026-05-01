@@ -100,8 +100,7 @@ namespace HRM.SantaLucia.Web.Data.Repositories
                 // Marcar las columnas calculadas como no modificadas para que EF no intente guardarlas
                 var entry = _context.Entry(empleado);
                 entry.Property(e => e.NombreCompleto).IsModified = false;
-                entry.Property(e => e.Edad).IsModified = false;
-                
+
                 await _context.SaveChangesAsync();
                 return empleado.EmpleadoKey;
             }
@@ -167,7 +166,6 @@ namespace HRM.SantaLucia.Web.Data.Repositories
 
                 // Marcar las columnas calculadas como no modificadas
                 _context.Entry(existing).Property(e => e.NombreCompleto).IsModified = false;
-                _context.Entry(existing).Property(e => e.Edad).IsModified = false;
 
                 await _context.SaveChangesAsync();
                 return true;

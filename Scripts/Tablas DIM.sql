@@ -72,7 +72,6 @@ BEGIN
         [TelefonoEmergencia] NVARCHAR(20) NULL,
         [ContactoEmergencia] NVARCHAR(200) NULL,
         [FechaNacimiento] DATE NOT NULL,
-        [Edad] INT Null,
         [Genero] NVARCHAR(20) NOT NULL,
         [EstadoCivil] NVARCHAR(20) NULL,
         [Nacionalidad] NVARCHAR(50) NOT NULL,

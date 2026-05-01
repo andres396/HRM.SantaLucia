@@ -1,6 +1,7 @@
 using AutoMapper;
 using HRM.SantaLucia.Web.Models.Entities;
 using HRM.SantaLucia.Web.Models.ViewModels;
+using HRM.SantaLucia.Web.Helpers;
 
 namespace HRM.SantaLucia.Web.Helpers
 {
@@ -13,6 +14,7 @@ namespace HRM.SantaLucia.Web.Helpers
                 .ForMember(dest => dest.NombrePuesto, opt => opt.MapFrom(src => src.Puesto != null ? src.Puesto.NombrePuesto : null))
                 .ForMember(dest => dest.NombreDepartamento, opt => opt.MapFrom(src => src.Departamento != null ? src.Departamento.NombreDepartamento : null))
                 .ForMember(dest => dest.NombreBanco, opt => opt.MapFrom(src => src.Banco != null ? src.Banco.NombreBanco : null))
+                .ForMember(dest => dest.Edad, opt => opt.MapFrom(src => EmpleadoEdad.Calcular(src.FechaNacimiento)))
                 .ReverseMap()
                 .ForMember(dest => dest.Puesto, opt => opt.Ignore())
                 .ForMember(dest => dest.Departamento, opt => opt.Ignore())

@@ -11,5 +11,6 @@ namespace HRM.SantaLucia.Web.Services
         Task<byte[]> ExportarNominaExcelAsync(int ano, int mes, int quincena, string? sede);
         Task<IEnumerable<NominaViewModel>> GetHistorialEmpleadoAsync(int empleadoKey, int top = 12);
         Task<decimal> GetTotalNominaAsync(int ano, int mes, int quincena, string? sede);
+        Task<CalcularAguinaldoViewModel> CalcularAguinaldoAsync(int ano, string? sede);
     }
 }

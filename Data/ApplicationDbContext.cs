@@ -38,9 +38,6 @@ namespace HRM.SantaLucia.Web.Data
                 entity.Property(e => e.NombreCompleto)
                     .HasComputedColumnSql("[Nombre] + ' ' + [Apellido1] + ' ' + ISNULL([Apellido2], '')", stored: true);
 
-                entity.Property(e => e.Edad)
-                    .HasComputedColumnSql("(DATEDIFF(YEAR, [FechaNacimiento], GETDATE()) - CASE WHEN DATEADD(YEAR, DATEDIFF(YEAR, [FechaNacimiento], GETDATE()), [FechaNacimiento]) > GETDATE() THEN 1 ELSE 0 END)", stored: true);
-
                 entity.HasOne(e => e.Puesto)
                     .WithMany(p => p.Empleados)
                     .HasForeignKey(e => e.PuestoKey)

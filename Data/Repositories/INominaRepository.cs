@@ -1,4 +1,5 @@
 using HRM.SantaLucia.Web.Models.Entities;
+using HRM.SantaLucia.Web.Models.ViewModels;
 
 namespace HRM.SantaLucia.Web.Data.Repositories
 {
@@ -11,5 +12,6 @@ namespace HRM.SantaLucia.Web.Data.Repositories
         Task<bool> UpdateAsync(Nomina nomina);
         Task<decimal> GetTotalNominaAsync(int ano, int mes, int quincena, string? sede);
         Task<IEnumerable<Nomina>> GetHistorialEmpleadoAsync(int empleadoKey, int top = 12);
+        Task<List<AguinaldoEmpleadoViewModel>> CalcularAguinaldoAsync(int ano, string? sede);
     }
 }
